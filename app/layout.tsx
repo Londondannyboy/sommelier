@@ -17,23 +17,23 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "SommelierQuest - Your Personal AI Wine Expert & Advisor",
-  description: "SommelierQuest is your personal AI wine expert. Get instant wine recommendations, perfect food pairings, and expert wine advice through voice conversation. Free sommelier assistant.",
-  keywords: ["SommelierQuest", "sommelier quest", "wine recommendations", "wine pairing", "wine expert", "AI wine advisor", "wine chatbot", "wine assistant", "sommelier app", "ai wine sommelier"],
+  title: "Sommelier AI | SommelierQuest - Free AI Wine Expert",
+  description: "Sommelier AI by SommelierQuest - your free AI sommelier for instant wine recommendations and food pairings. The best sommelier AI app for wine advice.",
+  keywords: ["sommelier AI", "sommelier ai", "AI sommelier", "SommelierQuest", "wine recommendations", "wine pairing", "wine expert", "AI wine advisor", "sommelier ai app", "ai wine sommelier", "free sommelier"],
   authors: [{ name: "SommelierQuest" }],
   creator: "SommelierQuest",
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://sommelier.quest"),
   openGraph: {
     type: "website",
     locale: "en_US",
-    title: "SommelierQuest - Your Personal AI Wine Expert",
-    description: "SommelierQuest provides instant wine recommendations and food pairings through natural voice conversation. Your free AI sommelier.",
+    title: "Sommelier AI | SommelierQuest - Free AI Wine Expert",
+    description: "Sommelier AI by SommelierQuest provides instant wine recommendations and food pairings. The best free sommelier AI for wine advice.",
     siteName: "SommelierQuest",
   },
   twitter: {
     card: "summary_large_image",
-    title: "SommelierQuest - Your Personal AI Wine Expert",
-    description: "SommelierQuest provides instant wine recommendations and food pairings. Your free AI sommelier.",
+    title: "Sommelier AI | SommelierQuest - Free AI Wine Expert",
+    description: "Sommelier AI by SommelierQuest - instant wine recommendations and food pairings. Free AI sommelier app.",
   },
   robots: {
     index: true,
