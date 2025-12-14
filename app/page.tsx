@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { VoiceWidget } from '@/components/VoiceWidget'
+import { LazyVoiceWidget } from '@/components/LazyVoiceWidget'
 
 export default function HomePage() {
   return (
@@ -45,8 +45,8 @@ export default function HomePage() {
             Sommelier AI - Your Personal AI Wine Expert
           </h1>
 
-          {/* Voice Widget */}
-          <VoiceWidget />
+          {/* Voice Widget - Lazy loaded */}
+          <LazyVoiceWidget />
 
           {/* Main headline */}
           <div className="text-center mt-8">
