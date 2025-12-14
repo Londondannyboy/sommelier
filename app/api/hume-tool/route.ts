@@ -3,6 +3,10 @@ import { neon } from '@neondatabase/serverless'
 
 const sql = neon(process.env.DATABASE_URL!)
 
+// Wine Explorer API configuration
+const RAPIDAPI_KEY = process.env.RAPIDAPI_KEY || 'c055cc4e61mshb21eca34cde5499p156733jsn174f7e5024de'
+const RAPIDAPI_HOST = 'wine-explorer-api-ratings-insights-and-search.p.rapidapi.com'
+
 /**
  * Hume EVI Tool Endpoint for Sommelier AI
  *
@@ -52,6 +56,14 @@ export async function POST(request: NextRequest) {
 
         case 'save_user_preference':
           result = await saveUserPreference(params)
+          break
+
+        case 'search_wine_by_name':
+          result = await searchWineByName(params.wine_name)
+          break
+
+        case 'get_wine_info':
+          result = await getWineInfo(params.wine_id)
           break
 
         default:
@@ -264,6 +276,120 @@ async function saveUserPreference(params: {
   }
 }
 
+// ============ Wine Explorer API Functions ============
+
+async function searchWineByName(wineName: string): Promise<string> {
+  if (!wineName) {
+    return "Please provide a wine name to search for."
+  }
+
+  try {
+    console.log('[searchWineByName] Searching for:', wineName)
+
+    const response = await fetch(
+      `https://${RAPIDAPI_HOST}/search?wine_name=${encodeURIComponent(wineName)}`,
+      {
+        headers: {
+          'x-rapidapi-host': RAPIDAPI_HOST,
+          'x-rapidapi-key': RAPIDAPI_KEY,
+        },
+      }
+    )
+
+    if (!response.ok) {
+      console.error('[searchWineByName] API error:', response.status)
+      // Fall back to local database
+      return searchWinesInDatabase(wineName)
+    }
+
+    const data = await response.json()
+
+    if (!data.items || data.items.length === 0) {
+      return `No wines found matching "${wineName}". Try a different search term like a grape variety (Cabernet, Pinot Noir), region (Bordeaux, Napa), or wine style.`
+    }
+
+    // Extract wine names from the response
+    const wines = data.items.slice(0, 8).map((item: Record<string, string>) => {
+      const [name] = Object.entries(item)[0]
+      return name
+    })
+
+    return `Found wines matching "${wineName}": ${wines.join(', ')}. Would you like more details about any of these?`
+  } catch (error) {
+    console.error('[searchWineByName] Error:', error)
+    // Fall back to local database on error
+    return searchWinesInDatabase(wineName)
+  }
+}
+
+async function searchWinesInDatabase(query: string): Promise<string> {
+  try {
+    const pattern = `%${query}%`
+    const wines = await sql`
+      SELECT name, winery, region, wine_type, price_range
+      FROM wines
+      WHERE is_active = true
+        AND (LOWER(name) LIKE LOWER(${pattern})
+             OR LOWER(grape_variety) LIKE LOWER(${pattern})
+             OR LOWER(region) LIKE LOWER(${pattern}))
+      ORDER BY name
+      LIMIT 5
+    `
+
+    if (wines.length === 0) {
+      return `I couldn't find "${query}" in my database. I can still recommend wines based on your preferences - tell me what flavors you enjoy or what you're eating.`
+    }
+
+    const wineList = wines.map(w => {
+      let desc = w.name
+      if (w.winery) desc += ` by ${w.winery}`
+      if (w.region) desc += ` from ${w.region}`
+      return desc
+    }).join('. ')
+
+    return `From my curated selection: ${wineList}`
+  } catch (error) {
+    console.error('[searchWinesInDatabase] Error:', error)
+    return "I'm having trouble searching right now. Tell me what you're looking for and I'll help based on my wine knowledge."
+  }
+}
+
+async function getWineInfo(wineId: string): Promise<string> {
+  if (!wineId) {
+    return "Please specify which wine you'd like to know more about."
+  }
+
+  try {
+    const response = await fetch(
+      `https://${RAPIDAPI_HOST}/wine/${encodeURIComponent(wineId)}`,
+      {
+        headers: {
+          'x-rapidapi-host': RAPIDAPI_HOST,
+          'x-rapidapi-key': RAPIDAPI_KEY,
+        },
+      }
+    )
+
+    if (!response.ok) {
+      return "I couldn't fetch details for that wine. Would you like me to suggest similar wines instead?"
+    }
+
+    const wine = await response.json()
+
+    let description = ''
+    if (wine.name) description += `${wine.name}. `
+    if (wine.winery) description += `From ${wine.winery}. `
+    if (wine.region) description += `Region: ${wine.region}. `
+    if (wine.rating) description += `Rating: ${wine.rating}/5. `
+    if (wine.description) description += wine.description
+
+    return description || "Wine details not available."
+  } catch (error) {
+    console.error('[getWineInfo] Error:', error)
+    return "I couldn't fetch those wine details. Tell me what you'd like to know and I'll help."
+  }
+}
+
 // GET for testing
 export async function GET() {
   return NextResponse.json({
@@ -273,7 +399,9 @@ export async function GET() {
       'get_wine_details',
       'get_food_pairing',
       'get_user_preferences',
-      'save_user_preference'
+      'save_user_preference',
+      'search_wine_by_name',
+      'get_wine_info'
     ],
     usage: 'POST tool calls from Hume EVI'
   })
