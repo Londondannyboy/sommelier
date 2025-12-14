@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   keywords: ["sommelier AI", "sommelier ai", "AI sommelier", "SommelierQuest", "wine recommendations", "wine pairing", "wine expert", "AI wine advisor", "sommelier ai app", "ai wine sommelier", "free sommelier"],
   authors: [{ name: "SommelierQuest" }],
   creator: "SommelierQuest",
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://sommelier.quest"),
+  metadataBase: new URL("https://sommelier.quest"),
   openGraph: {
     type: "website",
     locale: "en_US",
@@ -46,8 +46,8 @@ const organizationJsonLd = {
   "@context": "https://schema.org",
   "@type": "Organization",
   name: "SommelierQuest",
-  description: "AI-powered wine advisor and sommelier. Get personalized wine recommendations and food pairings.",
-  url: process.env.NEXT_PUBLIC_APP_URL || "https://sommelier.quest",
+  description: "Sommelier AI - AI-powered wine advisor. Get personalized wine recommendations and food pairings.",
+  url: "https://sommelier.quest",
 };
 
 export default function RootLayout({
