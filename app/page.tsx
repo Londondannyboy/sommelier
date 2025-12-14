@@ -168,37 +168,37 @@ export default function HomePage() {
         </section>
 
         {/* Sommelier AI for Business */}
-        <section id="sommelier-ai-for-business" className="py-24 bg-black">
+        <section id="sommelier-ai-for-business" className="py-24 bg-white border-y border-stone-200">
           <div className="max-w-4xl mx-auto px-4 text-center">
-            <h2 className="text-3xl md:text-4xl font-serif font-bold mb-6 text-white">
+            <h2 className="text-3xl md:text-4xl font-serif font-bold mb-6 text-stone-900">
               Sommelier AI for Business
             </h2>
-            <p className="text-lg text-gray-200 max-w-xl mx-auto mb-6">
+            <p className="text-lg text-stone-600 max-w-xl mx-auto mb-6">
               Restaurants, wine retailers, and hospitality businesses can integrate our sommelier AI into their customer experience. Help your guests find the perfect wine with SommelierQuest sommelier AI technology.
             </p>
-            <p className="text-lg text-gray-200 max-w-xl mx-auto mb-10">
+            <p className="text-lg text-stone-600 max-w-xl mx-auto mb-10">
               SommelierQuest offers enterprise sommelier AI solutions including API access, custom integrations, and white-label AI sommelier products. Contact us to learn how our sommelier AI can enhance your business.
             </p>
 
             <a
               href="mailto:hello@sommelier.quest?subject=Sommelier AI for Business Inquiry"
-              className="inline-flex items-center justify-center bg-white text-stone-900 font-semibold px-8 py-4 rounded-lg hover:bg-stone-100 transition-colors text-lg"
+              className="inline-flex items-center justify-center bg-wine-700 text-white font-semibold px-8 py-4 rounded-lg hover:bg-wine-800 transition-colors text-lg"
             >
               Contact Us About Sommelier AI Enterprise
             </a>
 
             <div className="grid grid-cols-3 gap-8 mt-16 max-w-md mx-auto">
               <div>
-                <p className="text-3xl font-bold text-white">24/7</p>
-                <p className="text-gray-300 text-sm">Sommelier AI Always On</p>
+                <p className="text-3xl font-bold text-stone-900">24/7</p>
+                <p className="text-stone-600 text-sm">Sommelier AI Always On</p>
               </div>
               <div>
-                <p className="text-3xl font-bold text-white">API</p>
-                <p className="text-gray-300 text-sm">Sommelier AI Integration</p>
+                <p className="text-3xl font-bold text-stone-900">API</p>
+                <p className="text-stone-600 text-sm">Sommelier AI Integration</p>
               </div>
               <div>
-                <p className="text-3xl font-bold text-white">1000s</p>
-                <p className="text-gray-300 text-sm">Wines in Sommelier AI</p>
+                <p className="text-3xl font-bold text-stone-900">1000s</p>
+                <p className="text-stone-600 text-sm">Wines in Sommelier AI</p>
               </div>
             </div>
           </div>
