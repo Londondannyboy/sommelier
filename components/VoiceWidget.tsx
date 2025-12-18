@@ -3,7 +3,6 @@
 import { useState, useCallback, useEffect } from 'react'
 import { VoiceProvider, useVoice } from '@humeai/voice-react'
 import { useUser } from '@stackframe/stack'
-import Image from 'next/image'
 import Link from 'next/link'
 // NOTE: System prompt should be configured in Hume dashboard for config ID 606a18be-4c8e-4877-8fb4-52665831b33d
 
@@ -12,21 +11,18 @@ interface Wine {
   name: string
   winery: string
   region: string
+  country: string
   wine_type: string
-  price_range: string
+  price_retail: string | number
   image_url: string
-}
-
-const priceMap: Record<string, { price: number; display: string }> = {
-  budget: { price: 12.99, display: '£12.99' },
-  mid: { price: 24.99, display: '£24.99' },
-  premium: { price: 49.99, display: '£49.99' },
-  luxury: { price: 199.99, display: '£199.99' },
+  vintage?: number
+  grape_variety?: string
 }
 
 function WineCard({ wine, onAddToCart }: { wine: Wine; onAddToCart: (wine: Wine) => void }) {
   const [added, setAdded] = useState(false)
-  const pricing = priceMap[wine.price_range] || { price: 19.99, display: '£19.99' }
+  const price = typeof wine.price_retail === 'string' ? parseFloat(wine.price_retail) : wine.price_retail
+  const displayPrice = price ? `£${price.toLocaleString('en-GB', { minimumFractionDigits: 2 })}` : 'Price on request'
 
   const handleAdd = () => {
     onAddToCart(wine)
@@ -37,19 +33,18 @@ function WineCard({ wine, onAddToCart }: { wine: Wine; onAddToCart: (wine: Wine)
   return (
     <div className="flex gap-3 bg-white rounded-xl border border-stone-200 p-3 mt-2 max-w-sm">
       <Link href={`/wines/${wine.id}`} className="relative w-16 h-24 flex-shrink-0">
-        <Image
-          src={wine.image_url || 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=400&h=600&fit=crop'}
+        <img
+          src={wine.image_url || 'https://res.cloudinary.com/dc7btom12/image/upload/v1766073925/wines/wine-22-1952-ch-haut-brion.jpg'}
           alt={wine.name}
-          fill
-          className="object-cover rounded-lg"
+          className="w-full h-full object-cover rounded-lg"
         />
       </Link>
       <div className="flex-1 min-w-0">
         <Link href={`/wines/${wine.id}`} className="font-semibold text-stone-900 text-sm hover:text-wine-600 line-clamp-2">
           {wine.name}
         </Link>
-        <p className="text-xs text-stone-500">{wine.region}</p>
-        <p className="font-bold text-wine-600 text-sm mt-1">{pricing.display}</p>
+        <p className="text-xs text-stone-500">{wine.winery} · {wine.country}</p>
+        <p className="font-bold text-wine-600 text-sm mt-1">{displayPrice}</p>
         <button
           onClick={handleAdd}
           className={`mt-2 px-3 py-1 text-xs font-medium rounded-full transition-all ${
@@ -107,7 +102,7 @@ const WINE_TOOLS = [
 ]
 
 function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?: string }) {
-  const { connect, disconnect, status, messages, sendToolResponse, sendToolError } = useVoice()
+  const { connect, disconnect, status, messages, sendToolMessage } = useVoice()
   const [manualConnected, setManualConnected] = useState(false)
   const [waveHeights, setWaveHeights] = useState<number[]>([])
   const [wines, setWines] = useState<Wine[]>([])
@@ -197,15 +192,29 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
 
           default:
             console.warn('[Hume Tool] Unknown tool:', name)
-            sendToolError(tool_call_id, `Unknown tool: ${name}`)
+            sendToolMessage({
+              type: 'tool_error',
+              toolCallId: tool_call_id,
+              error: `Unknown tool: ${name}`,
+              content: '',
+            })
             return
         }
 
         console.log('[Hume Tool] Result:', result)
-        sendToolResponse(tool_call_id, JSON.stringify(result))
+        sendToolMessage({
+          type: 'tool_response',
+          toolCallId: tool_call_id,
+          content: JSON.stringify(result),
+        })
       } catch (error) {
         console.error('[Hume Tool] Error:', error)
-        sendToolError(tool_call_id, 'Tool execution failed')
+        sendToolMessage({
+          type: 'tool_error',
+          toolCallId: tool_call_id,
+          error: 'Tool execution failed',
+          content: '',
+        })
       }
     }
 
@@ -213,7 +222,7 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
     if (lastMessage.tool_call_id && lastMessage.name) {
       handleToolCall(lastMessage)
     }
-  }, [messages, sendToolResponse, sendToolError])
+  }, [messages, sendToolMessage])
 
   // Detect wines in messages
   useEffect(() => {
@@ -327,7 +336,7 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
   const handleAddToCart = useCallback((wine: Wine) => {
     const existingCart = JSON.parse(localStorage.getItem('sommelier-cart') || '[]')
     const existingIndex = existingCart.findIndex((item: { id: number }) => item.id === wine.id)
-    const pricing = priceMap[wine.price_range] || { price: 19.99 }
+    const price = typeof wine.price_retail === 'string' ? parseFloat(wine.price_retail) : wine.price_retail
 
     if (existingIndex >= 0) {
       existingCart[existingIndex].quantity += 1
@@ -336,7 +345,7 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
         id: wine.id,
         name: wine.name,
         winery: wine.winery,
-        price: pricing.price,
+        price: price || 0,
         quantity: 1,
         image_url: wine.image_url,
       })
