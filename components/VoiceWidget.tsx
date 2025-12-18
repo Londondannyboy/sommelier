@@ -76,8 +76,6 @@ interface UserProfile {
 
 function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?: string }) {
   const { connect, disconnect, status, messages } = useVoice()
-  const [isConnecting, setIsConnecting] = useState(false)
-  const [isManuallyConnected, setIsManuallyConnected] = useState(false)
   const [waveHeights, setWaveHeights] = useState<number[]>([])
   const [wines, setWines] = useState<Wine[]>([])
   const [detectedWines, setDetectedWines] = useState<Map<number, Wine[]>>(new Map())
@@ -86,12 +84,6 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
   // Log status changes for debugging
   useEffect(() => {
     console.log('[Hume] Status changed:', status.value)
-    // Sync our manual state with Hume status
-    if (status.value === 'connected') {
-      setIsManuallyConnected(true)
-    } else if (status.value === 'disconnected') {
-      setIsManuallyConnected(false)
-    }
   }, [status.value])
 
   // Fetch wines and user profile on mount
@@ -168,8 +160,6 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
       return
     }
 
-    setIsConnecting(true)
-
     // Session settings with variables only - NO systemPrompt (let Hume config handle it)
     const sessionSettings = {
       type: 'session_settings' as const,
@@ -194,18 +184,14 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
         sessionSettings
       })
       console.log('[Hume] Connected!')
-      setIsManuallyConnected(true)
     } catch (e: any) {
       console.error('[Hume] Connect error:', e?.message || e)
-      setIsManuallyConnected(false)
     }
-
-    setIsConnecting(false)
   }, [connect, accessToken, userId, userProfile])
 
   const handleDisconnect = useCallback(() => {
     disconnect()
-    setIsManuallyConnected(false)
+    console.log('[Hume] Disconnected')
   }, [disconnect])
 
   const handleAddToCart = useCallback((wine: Wine) => {
@@ -229,8 +215,9 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
     localStorage.setItem('sommelier-cart', JSON.stringify(existingCart))
   }, [])
 
-  // Use both Hume status AND our manual tracking (in case status doesn't update)
-  const isConnected = status.value === 'connected' || isManuallyConnected
+  // Match fractional.quest exactly - trust Hume status
+  const isConnected = status.value === 'connected'
+  const isConnecting = status.value === 'connecting'
   const isError = status.value === 'error'
 
   return (
@@ -250,9 +237,11 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
           disabled={isConnecting}
           className={`w-20 h-20 rounded-full flex items-center justify-center transition-all duration-300 ${
             isConnected
-              ? 'bg-wine-600 hover:bg-wine-700'
+              ? 'bg-wine-600 hover:bg-wine-700 animate-pulse'
+              : isConnecting
+              ? 'bg-gray-400 cursor-not-allowed'
               : 'bg-stone-900 hover:bg-stone-800'
-          } ${isConnecting ? 'opacity-50' : ''} shadow-xl hover:shadow-2xl`}
+          } shadow-xl hover:shadow-2xl`}
           aria-label={isConnected ? "Stop conversation with Dionysus" : "Start conversation with Dionysus"}
         >
           {isConnecting ? (
@@ -285,7 +274,9 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
       </div>
 
       <p className="text-stone-500 text-lg mb-8">
-        {isConnected
+        {isConnecting
+          ? "Connecting to Dionysus..."
+          : isConnected
           ? "Dionysus is listening — describe your needs."
           : isError
           ? "Connection error — tap to try again."
@@ -378,7 +369,10 @@ export function VoiceWidget() {
   }
 
   return (
-    <VoiceProvider>
+    <VoiceProvider
+      onError={(err) => console.error('[Hume Error]', err)}
+      onClose={(e) => console.warn('[Hume Close]', e?.code, e?.reason)}
+    >
       <VoiceInterface accessToken={accessToken} userId={user?.id} />
     </VoiceProvider>
   )
