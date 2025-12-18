@@ -76,6 +76,7 @@ interface UserProfile {
 
 function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?: string }) {
   const { connect, disconnect, status, messages } = useVoice()
+  const [manualConnected, setManualConnected] = useState(false)
   const [waveHeights, setWaveHeights] = useState<number[]>([])
   const [wines, setWines] = useState<Wine[]>([])
   const [detectedWines, setDetectedWines] = useState<Map<number, Wine[]>>(new Map())
@@ -84,6 +85,8 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
   // Log status changes for debugging
   useEffect(() => {
     console.log('[Hume] Status changed:', status.value)
+    if (status.value === 'connected') setManualConnected(true)
+    if (status.value === 'disconnected') setManualConnected(false)
   }, [status.value])
 
   // Fetch wines and user profile on mount
@@ -184,13 +187,16 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
         sessionSettings
       })
       console.log('[Hume] Connected!')
+      setManualConnected(true)
     } catch (e: any) {
       console.error('[Hume] Connect error:', e?.message || e)
+      setManualConnected(false)
     }
   }, [connect, accessToken, userId, userProfile])
 
   const handleDisconnect = useCallback(() => {
     disconnect()
+    setManualConnected(false)
     console.log('[Hume] Disconnected')
   }, [disconnect])
 
@@ -215,9 +221,9 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
     localStorage.setItem('sommelier-cart', JSON.stringify(existingCart))
   }, [])
 
-  // Match fractional.quest exactly - trust Hume status
-  const isConnected = status.value === 'connected'
-  const isConnecting = status.value === 'connecting'
+  // Use both Hume status AND manual tracking (status doesn't always update)
+  const isConnected = status.value === 'connected' || manualConnected
+  const isConnecting = status.value === 'connecting' && !manualConnected
   const isError = status.value === 'error'
 
   return (
