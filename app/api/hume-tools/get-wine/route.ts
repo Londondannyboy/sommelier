@@ -56,8 +56,6 @@ export async function POST(request: NextRequest) {
       drinking_window: wine.drinking_window,
       stock_quantity: wine.stock_quantity,
       image_url: wine.image_url,
-      supplier: wine.supplier,
-      sku: wine.sku,
     }
 
     return NextResponse.json({

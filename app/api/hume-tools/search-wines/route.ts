@@ -15,7 +15,8 @@ export async function POST(request: NextRequest) {
       SELECT
         id, name, winery, region, country, grape_variety, vintage,
         wine_type, style, price_retail, price_trade, bottle_size,
-        tasting_notes, critic_scores, drinking_window, image_url, supplier
+        tasting_notes, critic_scores, drinking_window, image_url,
+        stock_quantity, case_size, classification
       FROM wines
       WHERE is_active = true
       ORDER BY price_retail ASC
@@ -68,7 +69,9 @@ export async function POST(request: NextRequest) {
       critic_scores: wine.critic_scores,
       drinking_window: wine.drinking_window,
       image_url: wine.image_url,
-      supplier: wine.supplier,
+      stock_quantity: wine.stock_quantity,
+      case_size: wine.case_size,
+      classification: wine.classification,
     }))
 
     return NextResponse.json({
