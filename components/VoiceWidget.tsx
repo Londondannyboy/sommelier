@@ -227,12 +227,15 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
           {isConnecting ? (
             <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin" />
           ) : isConnected ? (
+            // Wine bottle stop icon
             <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M6 4h3v16H6V4zm9 0h3v16h-3V4z" />
+              <path d="M9 2h6v1h2V2h-2v1h-6V2zm-1 3h8v2h1V5h-1v2h-8V5h-1v2h1V5zm0 4h8v7H8v-7zm0 8h8v2H8v-2zm1 3h6v1H9v-1z" />
             </svg>
           ) : (
+            // Wine bottle play icon
             <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M8 5v14l11-7z" />
+              <path d="M9 2h6v1h2V2h-2v1h-6V2zm-1 3h8v2h1V5h-1v2h-8V5h-1v2h1V5zm0 4h8v7H8v-7zm0 8h8v2H8v-2zm1 3h6v1H9v-1z" opacity="0.7" />
+              <path d="M12 8l-4 3v2l4 3 4-3v-2l-4-3z" />
             </svg>
           )}
         </button>

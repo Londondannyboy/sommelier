@@ -36,7 +36,7 @@ export default function HomePage() {
                 href="/handler/sign-up"
                 className="hidden sm:inline-flex bg-wine-600 text-white font-medium px-5 py-2.5 rounded-full hover:bg-wine-700 transition-colors"
               >
-                Sign up free
+                Sign in to beta
               </Link>
             </div>
           </div>
@@ -46,11 +46,6 @@ export default function HomePage() {
       {/* Hero Section */}
       <main>
         <section className="max-w-5xl mx-auto px-4 pt-20 pb-16">
-          {/* H1 with keyword - visible */}
-          <h1 className="text-center text-xl font-semibold text-wine-600 mb-6 tracking-wide">
-            SOMMELIER AI — Enterprise Wine Solutions
-          </h1>
-
           {/* Voice Widget - Lazy loaded */}
           <LazyVoiceWidget />
 
