@@ -464,8 +464,13 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
         ))}
       </div>
 
+      {/* Wine Proverb */}
+      <p className="text-wine-600 text-sm italic mb-2">
+        "Where there is no wine, there is no love"
+      </p>
+
       {/* Status Text */}
-      <p className="text-wine-700 text-lg font-medium mb-4">
+      <p className="text-wine-700 text-lg font-bold mb-4">
         {isConnecting
           ? "Connecting to Aionysus..."
           : isConnected

@@ -13,16 +13,12 @@ export function Header() {
       <div className="max-w-6xl mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2">
-            <img
-              src="/aionysus.jpg"
-              alt="Aionysus AI sommelier"
-              width="32"
-              height="32"
-              className="w-8 h-8 rounded-full object-cover"
-            />
-            <span className="font-bold text-xl text-wine-600 hidden sm:inline">
+          <Link href="/" className="flex flex-col">
+            <span className="font-serif font-bold text-2xl text-wine-700">
               Aionysus
+            </span>
+            <span className="text-[10px] text-wine-500 italic -mt-1">
+              Where there is no wine, there is no love
             </span>
           </Link>
 
