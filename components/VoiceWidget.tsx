@@ -184,8 +184,10 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
       console.log('Waiting for Hume connection...')
       await connectionPromise
       console.log('Connected successfully')
+      console.log('Current status after connect:', status.value)
     } catch (error) {
       console.error('Failed to connect to Hume:', error)
+      console.error('Error details:', error instanceof Error ? error.message : String(error))
       setIsConnecting(false)
     }
   }, [connect, accessToken, userId, userProfile])
