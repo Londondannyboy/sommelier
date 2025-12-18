@@ -5,7 +5,7 @@ import { VoiceProvider, useVoice } from '@humeai/voice-react'
 import { useUser } from '@stackframe/stack'
 import Image from 'next/image'
 import Link from 'next/link'
-import { DIONYSUS_SYSTEM_PROMPT } from '@/constants/dionysus-prompt'
+// NOTE: System prompt should be configured in Hume dashboard for config ID 606a18be-4c8e-4877-8fb4-52665831b33d
 
 interface Wine {
   id: number
@@ -157,54 +157,36 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
     }
 
     setIsConnecting(true)
-    try {
-      const variables: Record<string, string> = {
+
+    // Session settings with variables only - NO systemPrompt (let Hume config handle it)
+    const sessionSettings = {
+      type: 'session_settings' as const,
+      variables: {
+        user_id: userId || '',
         userDisplayName: userProfile?.displayName || 'Friend',
-        accountStatus: userId ? 'Authenticated' : 'Guest',
+        is_authenticated: userId ? 'true' : 'false',
         wineExperienceLevel: userProfile?.wineExperienceLevel || 'enthusiast',
         preferredWineTypes: userProfile?.preferredWineTypes || 'all styles',
         pricePreference: userProfile?.pricePreference || 'premium',
         isNewUser: userProfile?.isNewUser ? 'yes' : 'no',
       }
+    }
 
-      console.log('Connecting to Hume with variables:', variables)
-      console.log('Access token exists:', !!accessToken)
-      console.log('User status:', userId ? 'Authenticated' : 'Guest')
+    console.log('[Hume] Connecting:', userProfile?.displayName, 'auth=', !!userId)
+    console.log('[Hume] Variables:', sessionSettings.variables)
 
-      const connectionPromise = connect({
+    try {
+      await connect({
         auth: { type: 'accessToken', value: accessToken },
         configId: '606a18be-4c8e-4877-8fb4-52665831b33d',
-        sessionSettings: {
-          type: 'session_settings',
-          systemPrompt: DIONYSUS_SYSTEM_PROMPT,
-          variables: variables,
-        },
+        sessionSettings
       })
-
-      console.log('Waiting for Hume connection...')
-
-      const connectionResult = await Promise.race([
-        connectionPromise,
-        new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('Hume connection timeout after 10s')), 10000)
-        )
-      ])
-
-      console.log('Connected successfully')
-      console.log('Current status after connect:', status.value)
-
-      // Wait a moment for status to update
-      await new Promise(resolve => setTimeout(resolve, 500))
-      console.log('Status after delay:', status.value)
-
-      if (status.value === 'disconnected') {
-        throw new Error('Connection established but status still disconnected - Hume may have rejected connection')
-      }
-    } catch (error) {
-      console.error('Failed to connect to Hume:', error)
-      console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace')
-      setIsConnecting(false)
+      console.log('[Hume] Connected!')
+    } catch (e: any) {
+      console.error('[Hume] Connect error:', e?.message || e)
     }
+
+    setIsConnecting(false)
   }, [connect, accessToken, userId, userProfile])
 
   const handleDisconnect = useCallback(() => {
