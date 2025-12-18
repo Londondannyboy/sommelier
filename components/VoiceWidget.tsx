@@ -361,24 +361,25 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
 
   return (
     <div className="flex flex-col items-center">
-      <div className="mb-6 text-center">
-        <h1 className="text-5xl md:text-6xl lg:text-7xl font-serif font-bold text-stone-900 tracking-tight mb-2">
-          Meet Dionysus
+      {/* Title with consistent serif font */}
+      <div className="mb-8 text-center">
+        <h1 className="text-5xl md:text-6xl lg:text-7xl font-serif font-bold text-wine-700 tracking-tight mb-2">
+          Dionysus
         </h1>
         <p className="text-lg md:text-xl text-stone-600 font-light">
           The Goddess of Wine and part-time Sommelier side-hustler
         </p>
       </div>
 
-      {/* Large Dionysus Image with Animated Border */}
-      <div className="relative mb-8">
+      {/* Dionysus Image with Play Button Centered Inside */}
+      <div className="relative mb-6">
         {/* Pulsating glow - only when NOT connected */}
         {!isConnected && !isConnecting && (
           <>
             <div
               className="absolute inset-0 rounded-full animate-[pulse-glow_2s_ease-in-out_infinite]"
               style={{
-                background: 'radial-gradient(circle, rgba(220,38,38,0.6) 0%, rgba(220,38,38,0) 70%)',
+                background: 'radial-gradient(circle, rgba(127,29,29,0.6) 0%, rgba(127,29,29,0) 70%)',
                 transform: 'scale(1.15)',
                 filter: 'blur(8px)',
               }}
@@ -386,7 +387,7 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
             <div
               className="absolute inset-0 rounded-full animate-[ping_2s_ease-in-out_infinite]"
               style={{
-                border: '3px solid rgba(220,38,38,0.5)',
+                border: '3px solid rgba(127,29,29,0.5)',
                 transform: 'scale(1.05)',
               }}
             />
@@ -398,90 +399,85 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
           <div
             className="absolute inset-0 rounded-full animate-[rotate-shine_3s_linear_infinite]"
             style={{
-              background: 'conic-gradient(from 0deg, transparent 0deg, rgba(127,29,29,0.8) 60deg, rgba(220,38,38,1) 120deg, rgba(127,29,29,0.8) 180deg, transparent 240deg, transparent 360deg)',
+              background: 'conic-gradient(from 0deg, transparent 0deg, rgba(127,29,29,0.8) 60deg, rgba(127,29,29,1) 120deg, rgba(127,29,29,0.8) 180deg, transparent 240deg, transparent 360deg)',
               transform: 'scale(1.08)',
               filter: 'blur(3px)',
             }}
           />
         )}
 
+        {/* Clickable container with image and centered play button */}
         <button
           onClick={isConnected ? handleDisconnect : handleConnect}
           disabled={isConnecting}
-          className="relative z-10"
+          className="relative z-10 group"
           aria-label={isConnected ? "Stop conversation with Dionysus" : "Start conversation with Dionysus"}
         >
           <img
             src="/dionysus.jpg"
-            alt={isConnected ? "Click to stop Dionysus" : "Click to speak with Dionysus"}
-            className={`w-40 h-40 md:w-52 md:h-52 rounded-full object-cover border-4 cursor-pointer ${
+            alt="Dionysus"
+            className={`w-44 h-44 md:w-56 md:h-56 rounded-full object-cover border-4 cursor-pointer ${
               isConnected
-                ? 'border-wine-600 shadow-[0_0_20px_rgba(127,29,29,0.6)] hover:border-wine-400 hover:shadow-[0_0_30px_rgba(127,29,29,0.8)]'
+                ? 'border-wine-600 shadow-[0_0_25px_rgba(127,29,29,0.7)]'
                 : isConnecting
-                ? 'border-gray-400 opacity-70 cursor-wait'
-                : 'border-wine-500 shadow-[0_0_20px_rgba(220,38,38,0.5)] hover:shadow-[0_0_40px_rgba(220,38,38,0.8)]'
+                ? 'border-wine-400 opacity-70 cursor-wait'
+                : 'border-wine-600 shadow-[0_0_20px_rgba(127,29,29,0.5)] group-hover:shadow-[0_0_40px_rgba(127,29,29,0.8)]'
             } transition-all duration-300`}
           />
-          {isConnecting && (
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin" />
-            </div>
-          )}
-        </button>
-      </div>
-
-      {/* Play/Stop Button and Waveform */}
-      <div className="flex items-center gap-3 mb-6">
-        <button
-          onClick={isConnected ? handleDisconnect : handleConnect}
-          disabled={isConnecting}
-          className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 ${
-            isConnected
-              ? 'bg-wine-600 hover:bg-wine-700'
-              : isConnecting
-              ? 'bg-gray-400 cursor-not-allowed'
-              : 'bg-stone-900 hover:bg-stone-800'
-          } shadow-lg`}
-          aria-label={isConnected ? "Stop" : "Play"}
-        >
-          {isConnecting ? (
-            <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
-          ) : isConnected ? (
-            <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-              <rect x="6" y="6" width="12" height="12" rx="2" />
-            </svg>
-          ) : (
-            <svg className="w-6 h-6 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M8 5v14l11-7z" />
-            </svg>
-          )}
-        </button>
-
-        <div className="flex items-center gap-[2px] h-10 w-48">
-          {waveHeights.map((height, i) => (
+          {/* Centered Play/Stop Button Overlay */}
+          <div className="absolute inset-0 flex items-center justify-center">
             <div
-              key={i}
-              className={`w-[2px] rounded-full transition-all duration-100 ${
-                isConnected ? 'bg-wine-400' : 'bg-stone-300'
-              }`}
-              style={{ height: `${height}%` }}
-            />
-          ))}
-        </div>
+              className={`w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center transition-all duration-300 ${
+                isConnected
+                  ? 'bg-wine-600/90 group-hover:bg-wine-700/95'
+                  : isConnecting
+                  ? 'bg-wine-400/80'
+                  : 'bg-wine-600/85 group-hover:bg-wine-600/95 group-hover:scale-110'
+              } shadow-lg backdrop-blur-sm`}
+            >
+              {isConnecting ? (
+                <div className="w-8 h-8 border-3 border-white border-t-transparent rounded-full animate-spin" />
+              ) : isConnected ? (
+                <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
+                  <rect x="6" y="6" width="12" height="12" rx="2" />
+                </svg>
+              ) : (
+                <svg className="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+              )}
+            </div>
+          </div>
+        </button>
       </div>
 
-      <p className="text-stone-500 text-lg mb-4">
+      {/* Waveform Animation - Centered Below */}
+      <div className="flex items-center justify-center gap-[2px] h-12 w-64 mb-4">
+        {waveHeights.map((height, i) => (
+          <div
+            key={i}
+            className={`w-[3px] rounded-full transition-all duration-100 ${
+              isConnected ? 'bg-wine-500' : 'bg-wine-300'
+            }`}
+            style={{ height: `${height}%` }}
+          />
+        ))}
+      </div>
+
+      {/* Status Text */}
+      <p className="text-wine-700 text-lg font-medium mb-4">
         {isConnecting
           ? "Connecting to Dionysus..."
           : isConnected
           ? "Dionysus is listening — describe your needs."
           : isError
           ? "Connection error — tap to try again."
-          : "Want wine advice? Hit play — Dionysus will help."}
+          : "Tap to speak with Dionysus"}
       </p>
 
-      <p className="text-blue-600 text-sm mb-8 font-medium text-center max-w-md">
-        Demo mode: Limited wine database (~20 wines). Any personal information shared is not retained and will be destroyed after this session.
+      {/* Demo Warning */}
+      <p className="text-wine-600/80 text-sm mb-8 text-center max-w-md">
+        Beta: 37 investment-grade Bordeaux wines. Personal information is not retained.
       </p>
 
       {messages.length > 0 && (
