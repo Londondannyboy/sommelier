@@ -21,8 +21,8 @@ export function Header() {
               height="32"
               className="w-8 h-8 rounded-full object-cover"
             />
-            <span className="font-bold text-xl text-stone-900 hidden sm:inline">
-              Sommelier<span className="text-wine-600">Quest</span>
+            <span className="font-bold text-xl text-wine-600 hidden sm:inline">
+              Dionysus
             </span>
           </Link>
 

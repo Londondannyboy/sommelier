@@ -17,11 +17,11 @@ export default function HomePage() {
       <main>
         <section className="max-w-5xl mx-auto px-4 pt-20 pb-16 relative">
           {/* Dionysus Watermark Background */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-5 z-0">
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-10 z-0">
             <img
               src="/dionysus.jpg"
               alt=""
-              className="w-96 h-96 object-cover rounded-full"
+              className="w-full h-full object-cover"
             />
           </div>
 
