@@ -240,40 +240,86 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
         </p>
       </div>
 
-      <div className="flex items-center gap-2 mb-6">
+      {/* Large Dionysus Image with Pulsating Border */}
+      <div className="relative mb-8">
+        <div
+          className={`absolute inset-0 rounded-full ${
+            isConnected
+              ? 'animate-pulse bg-wine-500'
+              : 'animate-[pulse-glow_2s_ease-in-out_infinite]'
+          }`}
+          style={{
+            background: isConnected
+              ? 'radial-gradient(circle, rgba(127,29,29,0.8) 0%, rgba(127,29,29,0) 70%)'
+              : 'radial-gradient(circle, rgba(220,38,38,0.6) 0%, rgba(220,38,38,0) 70%)',
+            transform: 'scale(1.15)',
+            filter: 'blur(8px)',
+          }}
+        />
+        <div
+          className="absolute inset-0 rounded-full animate-[ping_2s_ease-in-out_infinite]"
+          style={{
+            border: '3px solid rgba(220,38,38,0.5)',
+            transform: 'scale(1.05)',
+          }}
+        />
         <button
           onClick={isConnected ? handleDisconnect : handleConnect}
           disabled={isConnecting}
-          className={`w-20 h-20 rounded-full flex items-center justify-center transition-all duration-300 ${
+          className="relative z-10"
+          aria-label={isConnected ? "Stop conversation with Dionysus" : "Start conversation with Dionysus"}
+        >
+          <img
+            src="/dionysus.jpg"
+            alt="Dionysus - Click to speak"
+            className={`w-40 h-40 md:w-52 md:h-52 rounded-full object-cover border-4 ${
+              isConnected
+                ? 'border-wine-600 shadow-[0_0_30px_rgba(127,29,29,0.8)]'
+                : isConnecting
+                ? 'border-gray-400 opacity-70'
+                : 'border-wine-500 shadow-[0_0_20px_rgba(220,38,38,0.5)] hover:shadow-[0_0_40px_rgba(220,38,38,0.8)] cursor-pointer'
+            } transition-all duration-300`}
+          />
+          {isConnecting && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin" />
+            </div>
+          )}
+        </button>
+      </div>
+
+      {/* Play/Stop Button and Waveform */}
+      <div className="flex items-center gap-3 mb-6">
+        <button
+          onClick={isConnected ? handleDisconnect : handleConnect}
+          disabled={isConnecting}
+          className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 ${
             isConnected
-              ? 'bg-wine-600 hover:bg-wine-700 animate-pulse'
+              ? 'bg-wine-600 hover:bg-wine-700'
               : isConnecting
               ? 'bg-gray-400 cursor-not-allowed'
               : 'bg-stone-900 hover:bg-stone-800'
-          } shadow-xl hover:shadow-2xl`}
-          aria-label={isConnected ? "Stop conversation with Dionysus" : "Start conversation with Dionysus"}
+          } shadow-lg`}
+          aria-label={isConnected ? "Stop" : "Play"}
         >
           {isConnecting ? (
-            <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin" />
           ) : isConnected ? (
-            // Wine bottle stop icon
-            <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M9 2h6v1h2V2h-2v1h-6V2zm-1 3h8v2h1V5h-1v2h-8V5h-1v2h1V5zm0 4h8v7H8v-7zm0 8h8v2H8v-2zm1 3h6v1H9v-1z" />
+            <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+              <rect x="6" y="6" width="12" height="12" rx="2" />
             </svg>
           ) : (
-            // Wine bottle play icon
-            <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M9 2h6v1h2V2h-2v1h-6V2zm-1 3h8v2h1V5h-1v2h-8V5h-1v2h1V5zm0 4h8v7H8v-7zm0 8h8v2H8v-2zm1 3h6v1H9v-1z" opacity="0.7" />
-              <path d="M12 8l-4 3v2l4 3 4-3v-2l-4-3z" />
+            <svg className="w-6 h-6 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M8 5v14l11-7z" />
             </svg>
           )}
         </button>
 
-        <div className="flex items-center gap-[2px] h-12 w-64">
+        <div className="flex items-center gap-[2px] h-10 w-48">
           {waveHeights.map((height, i) => (
             <div
               key={i}
-              className={`w-[3px] rounded-full transition-all duration-100 ${
+              className={`w-[2px] rounded-full transition-all duration-100 ${
                 isConnected ? 'bg-wine-400' : 'bg-stone-300'
               }`}
               style={{ height: `${height}%` }}

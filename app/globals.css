@@ -209,3 +209,34 @@ h2 {
     transform: translateY(0);
   }
 }
+
+/* Dionysus Pulsating Glow Effect */
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 0.6;
+    transform: scale(1.1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+@keyframes neon-pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 10px rgba(220, 38, 38, 0.5),
+      0 0 20px rgba(220, 38, 38, 0.3),
+      0 0 30px rgba(220, 38, 38, 0.2);
+  }
+  50% {
+    box-shadow:
+      0 0 20px rgba(220, 38, 38, 0.8),
+      0 0 40px rgba(220, 38, 38, 0.5),
+      0 0 60px rgba(220, 38, 38, 0.3);
+  }
+}
+
+.dionysus-glow {
+  animation: neon-pulse 2s ease-in-out infinite;
+}
