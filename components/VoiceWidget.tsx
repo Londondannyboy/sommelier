@@ -151,6 +151,11 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
   }, [status.value])
 
   const handleConnect = useCallback(async () => {
+    if (!accessToken) {
+      console.error('No access token available')
+      return
+    }
+
     setIsConnecting(true)
     try {
       const variables: Record<string, string> = {
@@ -162,6 +167,8 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
         isNewUser: userProfile?.isNewUser ? 'yes' : 'no',
       }
 
+      console.log('Connecting to Hume with variables:', variables)
+
       await connect({
         auth: { type: 'accessToken', value: accessToken },
         configId: '606a18be-4c8e-4877-8fb4-52665831b33d',
@@ -171,10 +178,12 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
           variables: variables,
         },
       })
+
+      console.log('Connected successfully')
     } catch (error) {
-      console.error('Failed to connect:', error)
+      console.error('Failed to connect to Hume:', error)
+      setIsConnecting(false)
     }
-    setIsConnecting(false)
   }, [connect, accessToken, userId, userProfile])
 
   const handleDisconnect = useCallback(() => {
