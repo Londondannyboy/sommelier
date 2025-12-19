@@ -1,5 +1,6 @@
 import { LazyVoiceWidget } from '@/components/LazyVoiceWidget'
 import { ScrollToTopButton } from '@/components/ScrollToTopButton'
+import { FeaturedWines } from '@/components/FeaturedWines'
 import Link from 'next/link'
 import Image from 'next/image'
 import type { Metadata } from 'next'
@@ -115,15 +116,19 @@ export default function HomePage() {
             <LazyVoiceWidget />
           </div>
 
-          {/* SEO Image with keyword alt text */}
-          <div className="flex justify-center mt-10">
-            <Image
-              src="/aionysus-classic-icon.png"
-              alt="Buy wine online with Aionysus AI sommelier - your personal wine expert"
-              width={100}
-              height={100}
-              className="opacity-50"
-            />
+        </section>
+
+        {/* Featured Wines - Horizontal scroll */}
+        <section className="py-16 bg-gradient-to-b from-black to-stone-950 border-t border-gold-800/20">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-8 px-4">
+              <span className="text-gold-500/60 text-sm tracking-[0.3em] uppercase">The Collection</span>
+              <h2 className="text-3xl md:text-4xl font-serif font-bold mt-2 bg-gradient-to-r from-gold-300 via-gold-400 to-gold-300 bg-clip-text text-transparent">
+                Featured Wines
+              </h2>
+              <p className="text-gold-200/60 mt-2">Curated picks from our divine collection</p>
+            </div>
+            <FeaturedWines />
           </div>
         </section>
 

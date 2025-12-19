@@ -139,8 +139,8 @@ export default function WineDetailClient({ wine }: WineDetailClientProps) {
           {/* Hero Section - Image + Purchase Info in viewport */}
           <div className="grid md:grid-cols-[280px_1fr] lg:grid-cols-[320px_1fr] gap-6 md:gap-10 mb-8">
             {/* Wine Image - Compact, fits in viewport */}
-            <div className="bg-gradient-to-b from-stone-900/80 to-stone-950/90 rounded-2xl p-6 flex items-center justify-center border border-gold-700/20">
-              <figure className="relative w-48 h-72 md:w-56 md:h-80 lg:w-64 lg:h-96">
+            <div className="bg-gradient-to-b from-stone-900/80 to-stone-950/90 rounded-2xl p-4 flex items-center justify-center border border-gold-700/20">
+              <figure className="relative w-56 h-80 md:w-64 md:h-96 lg:w-72 lg:h-[420px]">
                 <Image
                   src={wine.image_url || PLACEHOLDER_IMAGE}
                   alt={`Buy ${wine.name} online - ${wine.wine_type} wine from ${wine.region}, ${wine.country}`}
@@ -180,7 +180,7 @@ export default function WineDetailClient({ wine }: WineDetailClientProps) {
               </h1>
 
               {/* Producer & Region */}
-              <h2 className="text-base md:text-lg text-stone-300 mb-3">
+              <h2 className="text-base md:text-lg text-white/90 mb-3">
                 {wine.winery} - {wine.region}, {wine.country}
               </h2>
 
@@ -225,16 +225,30 @@ export default function WineDetailClient({ wine }: WineDetailClientProps) {
                   </button>
                 </div>
 
-                <button
-                  onClick={handleAddToCart}
-                  className={`flex-1 min-w-[200px] py-3 px-6 rounded-lg font-semibold transition-all ${
-                    addedToCart
-                      ? 'bg-green-600 text-white'
-                      : 'bg-gradient-to-r from-gold-500 to-gold-600 text-black hover:from-gold-400 hover:to-gold-500 shadow-[0_0_20px_rgba(212,165,10,0.3)]'
-                  }`}
-                >
-                  {addedToCart ? 'Added!' : 'Add to Cart'}
-                </button>
+                <div className="relative">
+                  {/* Sparkle particles around button */}
+                  <div className="absolute inset-0 -m-2 pointer-events-none overflow-visible">
+                    <div className="sparkle-container">
+                      {[...Array(8)].map((_, i) => (
+                        <div key={i} className="sparkle" style={{ animationDelay: `${i * 0.3}s` }} />
+                      ))}
+                    </div>
+                  </div>
+                  <button
+                    onClick={handleAddToCart}
+                    className={`relative py-3 px-8 rounded-lg font-semibold transition-all overflow-hidden ${
+                      addedToCart
+                        ? 'bg-green-600 text-white'
+                        : 'bg-gradient-to-r from-gold-500 to-gold-600 text-black hover:from-gold-400 hover:to-gold-500 shadow-[0_0_25px_rgba(212,165,10,0.4)] hover:shadow-[0_0_35px_rgba(212,165,10,0.6)]'
+                    }`}
+                  >
+                    {/* Shimmer effect */}
+                    {!addedToCart && (
+                      <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/30 to-transparent" />
+                    )}
+                    <span className="relative">{addedToCart ? 'Added!' : 'Add to Cart'}</span>
+                  </button>
+                </div>
 
                 <SaveWineButton wineId={wine.id} size="lg" />
               </div>

@@ -803,3 +803,83 @@ blockquote.divine-quote::after {
 .goddess-fizz .fizz-bubble:nth-child(4) { right: 40%; width: 5px; height: 5px; --x-offset: -5px; animation-duration: 1.8s; animation-delay: 0.2s; }
 .goddess-fizz .fizz-bubble:nth-child(5) { right: 25%; width: 8px; height: 8px; --x-offset: 3px; animation-duration: 2.4s; animation-delay: 0.5s; }
 .goddess-fizz .fizz-bubble:nth-child(6) { right: 10%; width: 6px; height: 6px; --x-offset: -4px; animation-duration: 2.1s; animation-delay: 0.8s; }
+
+/* ===========================================
+   BUY BUTTON SPARKLE EFFECTS
+   =========================================== */
+
+/* Shimmer effect for button */
+.animate-shimmer {
+  animation: button-shimmer 2.5s ease-in-out infinite;
+}
+
+@keyframes button-shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Sparkle particles around button */
+@keyframes sparkle-float {
+  0%, 100% {
+    transform: translate(0, 0) scale(0);
+    opacity: 0;
+  }
+  10% {
+    transform: translate(var(--tx), var(--ty)) scale(1);
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  90% {
+    transform: translate(calc(var(--tx) * 2), calc(var(--ty) * 2)) scale(0.5);
+    opacity: 0.3;
+  }
+  100% {
+    transform: translate(calc(var(--tx) * 2.5), calc(var(--ty) * 2.5)) scale(0);
+    opacity: 0;
+  }
+}
+
+.sparkle-container {
+  position: absolute;
+  inset: -15px;
+  pointer-events: none;
+}
+
+.sparkle-container .sparkle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.95), rgba(245, 197, 24, 0.8));
+  border-radius: 50%;
+  box-shadow: 0 0 6px rgba(245, 197, 24, 0.8), 0 0 12px rgba(245, 197, 24, 0.4);
+  animation: sparkle-float 2.4s ease-in-out infinite;
+}
+
+.sparkle-container .sparkle:nth-child(1) { top: 0; left: 20%; --tx: -8px; --ty: -15px; animation-delay: 0s; }
+.sparkle-container .sparkle:nth-child(2) { top: 0; left: 50%; --tx: 0; --ty: -18px; animation-delay: 0.3s; }
+.sparkle-container .sparkle:nth-child(3) { top: 0; right: 20%; --tx: 8px; --ty: -15px; animation-delay: 0.6s; }
+.sparkle-container .sparkle:nth-child(4) { top: 50%; left: 0; --tx: -15px; --ty: 0; animation-delay: 0.9s; }
+.sparkle-container .sparkle:nth-child(5) { top: 50%; right: 0; --tx: 15px; --ty: 0; animation-delay: 1.2s; }
+.sparkle-container .sparkle:nth-child(6) { bottom: 0; left: 20%; --tx: -8px; --ty: 15px; animation-delay: 1.5s; }
+.sparkle-container .sparkle:nth-child(7) { bottom: 0; left: 50%; --tx: 0; --ty: 18px; animation-delay: 1.8s; }
+.sparkle-container .sparkle:nth-child(8) { bottom: 0; right: 20%; --tx: 8px; --ty: 15px; animation-delay: 2.1s; }
+
+/* ===========================================
+   UTILITY CLASSES
+   =========================================== */
+
+/* Hide scrollbar but keep functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
