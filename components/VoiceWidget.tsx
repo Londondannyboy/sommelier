@@ -6,12 +6,11 @@ import { useUser } from '@stackframe/stack'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
 
-// Dynamically import animation components to avoid SSR issues
-const SplineGoddess = dynamic(() => import('./SplineGoddess'), { ssr: false })
+// Dynamically import Lottie component to avoid SSR issues
 const LottieGoddess = dynamic(() => import('./LottieGoddess'), { ssr: false })
 
 // Animation mode type
-type AnimationMode = 'image' | 'spline' | 'lottie'
+type AnimationMode = 'image' | 'lottie'
 // NOTE: System prompt should be configured in Hume dashboard for config ID 606a18be-4c8e-4877-8fb4-52665831b33d
 
 interface Wine {
@@ -181,7 +180,7 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
   const { connect, disconnect, status, messages, sendToolMessage, isPlaying } = useVoice()
   const [manualConnected, setManualConnected] = useState(false)
   const [waveHeights, setWaveHeights] = useState<number[]>([])
-  const [animationMode, setAnimationMode] = useState<AnimationMode>('image')
+  const [animationMode, setAnimationMode] = useState<AnimationMode>('lottie')
   const [wines, setWines] = useState<Wine[]>([])
   const [discussedWines, setDiscussedWines] = useState<Wine[]>([])
   const [localCart, setLocalCart] = useState<Array<{ id: number; name: string; winery: string; price: number; quantity: number; image_url: string }>>([])
@@ -572,7 +571,7 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
 
         {/* Animation Mode Toggle - Dev Tool */}
         <div className="absolute -top-12 left-1/2 -translate-x-1/2 flex gap-1 bg-black/80 rounded-full p-1 z-20">
-          {(['image', 'spline', 'lottie'] as AnimationMode[]).map((mode) => (
+          {(['image', 'lottie'] as AnimationMode[]).map((mode) => (
             <button
               key={mode}
               onClick={() => setAnimationMode(mode)}
@@ -582,7 +581,7 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
                   : 'text-gold-400 hover:text-gold-300'
               }`}
             >
-              {mode.charAt(0).toUpperCase() + mode.slice(1)}
+              {mode === 'lottie' ? 'Animated' : 'Classic'}
             </button>
           ))}
         </div>
@@ -651,23 +650,32 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
               </>
             )}
 
-            {/* MODE: Spline 3D */}
-            {animationMode === 'spline' && (
-              <div className="absolute inset-0">
-                <SplineGoddess
-                  isPlaying={isPlaying}
-                  sceneUrl="https://prod.spline.design/6Wq1Q7YGyM-iab9i/scene.splinecode"
-                />
-              </div>
-            )}
-
-            {/* MODE: Lottie Animation */}
+            {/* MODE: Lottie + Image Hybrid */}
             {animationMode === 'lottie' && (
               <div className="absolute inset-0">
-                <LottieGoddess
-                  isPlaying={isPlaying}
-                  animationPath="/animations/goddess.json"
-                />
+                {/* Lottie aura effects BEHIND the image */}
+                <div className="absolute inset-[-20%] w-[140%] h-[140%] z-0">
+                  <LottieGoddess
+                    isPlaying={isPlaying}
+                    animationPath="/animations/goddess.json"
+                  />
+                </div>
+                {/* Goddess image ON TOP of effects */}
+                <div className={`absolute inset-[-15%] w-[130%] h-[130%] flex items-center justify-center z-10 ${
+                  isPlaying ? 'animate-[speaking-breathe_2s_ease-in-out_infinite]' : ''
+                }`}>
+                  <img
+                    src="/aionysus-classic-icon.png"
+                    alt="Aionysus - Goddess of Wine"
+                    className={`w-full h-full object-cover cursor-pointer ${
+                      isPlaying ? 'scale-105 brightness-110' : ''
+                    } transition-all duration-300`}
+                  />
+                </div>
+                {/* Speaking glow on top */}
+                {isPlaying && (
+                  <div className="absolute inset-0 rounded-full animate-[speaking-glow_1.5s_ease-in-out_infinite] pointer-events-none z-20" />
+                )}
               </div>
             )}
           </div>
