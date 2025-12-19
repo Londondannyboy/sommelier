@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { SaveWineButton } from '@/components/SaveWineButton'
 
 interface Wine {
   id: number
@@ -233,6 +234,8 @@ export default function WineDetailClient({ wine }: WineDetailClientProps) {
                 >
                   {addedToCart ? 'Added to Cart!' : `Add ${wine.name} to Cart`}
                 </button>
+
+                <SaveWineButton wineId={wine.id} size="lg" />
               </div>
 
               {/* About This Wine - SEO Content Section */}

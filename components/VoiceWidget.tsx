@@ -492,30 +492,29 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
           </>
         )}
 
-        {/* The Goddess - clickable with gold background */}
+        {/* The Goddess - clickable with gold background inside circle */}
         <button
           onClick={isConnected ? handleDisconnect : handleConnect}
           disabled={isConnecting}
           className="relative z-10 group focus:outline-none"
           aria-label={isConnected ? "Stop conversation with Aionysus" : "Tap to speak with Aionysus"}
         >
-          {/* Gold circular border/glow container */}
-          <div className={`relative rounded-full p-4 ${
+          {/* Circular container that clips the square icon */}
+          <div className={`relative w-72 h-72 md:w-80 md:h-80 lg:w-96 lg:h-96 rounded-full overflow-hidden ${
             isConnected
               ? 'shadow-[0_0_60px_rgba(212,165,10,0.9)]'
               : 'shadow-[0_0_40px_rgba(212,165,10,0.5)] group-hover:shadow-[0_0_70px_rgba(212,165,10,0.8)]'
           } transition-all duration-300`}
             style={{
               border: '3px solid rgba(212,165,10,0.8)',
-              background: 'radial-gradient(circle, rgba(212,165,10,0.15) 0%, transparent 70%)'
             }}
           >
-            {/* Icon with gold background - square with rounded corners */}
-            <div className="relative w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 rounded-3xl overflow-hidden bg-gradient-to-br from-amber-500 via-yellow-500 to-amber-600">
+            {/* Icon scaled up to fill the circle (square corners get clipped) */}
+            <div className="absolute inset-[-15%] w-[130%] h-[130%] flex items-center justify-center">
               <img
                 src="/aionysus-classic-icon.png"
                 alt="Aionysus - Goddess of Wine"
-                className={`w-full h-full object-contain cursor-pointer ${
+                className={`w-full h-full object-cover cursor-pointer ${
                   isConnected
                     ? 'scale-105'
                     : isConnecting
