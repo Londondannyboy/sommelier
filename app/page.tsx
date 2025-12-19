@@ -50,24 +50,17 @@ export default function HomePage() {
         BETA
       </div>
 
-      {/* Hero Section */}
+      {/* Hero Section - more breathing room */}
       <main className="relative z-10">
-        <section className="max-w-5xl mx-auto px-4 pt-28 pb-16 relative">
+        <section className="max-w-5xl mx-auto px-4 pt-36 pb-20 relative">
           {/* H1 for SEO */}
           <h1 className="sr-only">AI Sommelier & AI Wine Taster - Aionysus</h1>
 
           {/* Voice Widget - Lazy loaded */}
           <LazyVoiceWidget />
 
-          {/* Supporting text with golden styling */}
-          <div className="text-center mt-6 relative z-10">
-            <p className="text-base text-gold-400/80 max-w-xl mx-auto italic font-light">
-              Your divine sommelier for premium wine recommendations
-            </p>
-          </div>
-
           {/* Decorative divider */}
-          <div className="divider-ornate max-w-md mx-auto mt-8">
+          <div className="divider-ornate max-w-md mx-auto mt-12">
             <span className="text-gold-500 text-lg">🍇</span>
           </div>
         </section>

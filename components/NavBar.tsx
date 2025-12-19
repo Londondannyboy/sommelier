@@ -46,59 +46,40 @@ export function NavBar() {
     <header className="sticky top-0 z-50">
       {/* Main navbar - dramatic dark with golden accents */}
       <div className="bg-gradient-to-r from-black via-stone-950 to-black border-b border-gold-600/30 shadow-[0_4px_30px_rgba(212,165,10,0.15)]">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex items-center justify-between h-20">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex items-center justify-between h-24">
 
-            {/* Left: Goddess icon only */}
+            {/* Left: Branding - Aionysus title & strapline */}
             <Link href="/" className="group">
-              <div className="relative">
-                <div className="absolute inset-0 bg-gold-500/30 rounded-full blur-xl group-hover:bg-gold-400/50 transition-all"></div>
-                <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-gold-400 shadow-[0_0_20px_rgba(212,165,10,0.5)] group-hover:shadow-[0_0_30px_rgba(212,165,10,0.7)] transition-all">
-                  <img
-                    src="/goddess.png"
-                    alt="Aionysus"
-                    className="w-full h-full object-cover scale-110"
-                    onError={(e) => { e.currentTarget.src = '/aionysus.jpg'; e.currentTarget.className = 'w-full h-full object-cover object-[center_15%]'; }}
-                  />
-                </div>
-              </div>
+              <h1 className="font-serif font-bold text-3xl bg-gradient-to-r from-gold-300 via-gold-400 to-gold-300 bg-clip-text text-transparent drop-shadow-[0_0_10px_rgba(212,165,10,0.5)] group-hover:drop-shadow-[0_0_15px_rgba(212,165,10,0.7)] transition-all">
+                Aionysus
+              </h1>
+              <p className="text-sm text-gold-400 italic tracking-wide">
+                Goddess of Wine
+              </p>
             </Link>
 
-            {/* Center: Title & Navigation */}
-            <div className="hidden md:flex flex-col items-center">
-              {/* Aionysus title - centered in navbar */}
-              <Link href="/" className="group">
-                <h1 className="font-serif font-bold text-2xl bg-gradient-to-r from-gold-300 via-gold-400 to-gold-300 bg-clip-text text-transparent drop-shadow-[0_0_10px_rgba(212,165,10,0.5)] group-hover:drop-shadow-[0_0_15px_rgba(212,165,10,0.7)] transition-all">
-                  Aionysus
-                </h1>
-                <p className="text-[10px] text-gold-500/80 italic tracking-wider text-center -mt-0.5">
-                  Goddess of Wine
-                </p>
+            {/* Center: Navigation - larger, white text */}
+            <nav className="hidden md:flex items-center gap-10">
+              <Link
+                href="/"
+                className="text-white hover:text-gold-300 transition-all font-semibold text-base uppercase tracking-widest hover:drop-shadow-[0_0_8px_rgba(212,165,10,0.5)]"
+              >
+                Home
               </Link>
-              {/* Sub-navigation */}
-              <nav className="flex items-center gap-6 mt-1">
-                <Link
-                  href="/"
-                  className="text-gold-300/70 hover:text-gold-300 transition-all font-medium text-[11px] uppercase tracking-widest hover:drop-shadow-[0_0_8px_rgba(212,165,10,0.5)]"
-                >
-                  Home
-                </Link>
-                <span className="text-gold-600/30">|</span>
-                <Link
-                  href="/wines"
-                  className="text-gold-300/70 hover:text-gold-300 transition-all font-medium text-[11px] uppercase tracking-widest hover:drop-shadow-[0_0_8px_rgba(212,165,10,0.5)]"
-                >
-                  Wines
-                </Link>
-                <span className="text-gold-600/30">|</span>
-                <Link
-                  href="/cart"
-                  className="text-gold-300/70 hover:text-gold-300 transition-all font-medium text-[11px] uppercase tracking-widest hover:drop-shadow-[0_0_8px_rgba(212,165,10,0.5)]"
-                >
-                  Basket
-                </Link>
-              </nav>
-            </div>
+              <Link
+                href="/wines"
+                className="text-white hover:text-gold-300 transition-all font-semibold text-base uppercase tracking-widest hover:drop-shadow-[0_0_8px_rgba(212,165,10,0.5)]"
+              >
+                Wines
+              </Link>
+              <Link
+                href="/cart"
+                className="text-white hover:text-gold-300 transition-all font-semibold text-base uppercase tracking-widest hover:drop-shadow-[0_0_8px_rgba(212,165,10,0.5)]"
+              >
+                Basket
+              </Link>
+            </nav>
 
             {/* Right: Cart & Auth */}
             <div className="flex items-center gap-4">

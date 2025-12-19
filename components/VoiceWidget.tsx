@@ -501,8 +501,7 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
           <img
             src="/goddess.jpg"
             alt="Aionysus - Goddess of Wine"
-            onError={(e) => { e.currentTarget.src = '/aionysus.jpg'; e.currentTarget.className = 'w-56 h-56 md:w-72 md:h-72 lg:w-80 lg:h-80 rounded-full object-cover object-[center_15%] border-4 cursor-pointer border-gold-400 shadow-[0_0_40px_rgba(212,165,10,0.6)] group-hover:shadow-[0_0_60px_rgba(212,165,10,0.9)] transition-all duration-300'; }}
-            className={`w-56 h-56 md:w-72 md:h-72 lg:w-80 lg:h-80 rounded-full object-cover border-4 cursor-pointer ${
+            className={`w-56 h-56 md:w-72 md:h-72 lg:w-80 lg:h-80 rounded-full object-cover object-[center_20%] border-4 cursor-pointer ${
               isConnected
                 ? 'border-gold-400 shadow-[0_0_50px_rgba(212,165,10,0.8)] scale-105'
                 : isConnecting
