@@ -4,6 +4,7 @@ import { Geist, Playfair_Display } from "next/font/google";
 import { StackProvider, StackTheme } from "@stackframe/stack";
 import { stackServerApp } from "@/stack/server";
 import { NavBar } from "@/components/NavBar";
+import { Footer } from "@/components/Footer";
 import { FloatingVoiceWidget } from "@/components/FloatingVoiceWidget";
 import "./globals.css";
 
@@ -86,13 +87,16 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
         />
       </head>
-      <body className={`${geistSans.variable} ${playfair.variable} antialiased`}>
+      <body className={`${geistSans.variable} ${playfair.variable} antialiased min-h-screen flex flex-col`}>
         <StackProvider app={stackServerApp}>
           <StackTheme>
             <Suspense fallback={<NavBarSkeleton />}>
               <NavBar />
             </Suspense>
-            {children}
+            <main className="flex-1">
+              {children}
+            </main>
+            <Footer />
             {/* Floating Voice Widget - accessible from all pages */}
             <Suspense fallback={null}>
               <FloatingVoiceWidget />

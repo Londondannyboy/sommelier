@@ -223,22 +223,6 @@ export default function HomePage() {
           </div>
         </section>
       </main>
-
-      {/* Footer */}
-      <footer className="bg-gradient-to-b from-white to-stone-50 border-t border-stone-100 py-12">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <span className="font-serif font-bold text-xl text-wine-700">Aionysus</span>
-          <p className="text-stone-500 italic text-sm mt-2 mb-6">Where there is no wine, there is no love</p>
-
-          <div className="border-t border-stone-200 pt-6">
-            <p className="text-stone-400 text-xs">
-              © {new Date().getFullYear()} Aionysus • BETA<br />
-              <a href="mailto:hello@aionysus.wine" className="hover:text-wine-600 transition-colors">hello@aionysus.wine</a>
-            </p>
-            <p className="text-stone-400 text-xs mt-4">Drink responsibly.</p>
-          </div>
-        </div>
-      </footer>
     </div>
   )
 }
