@@ -1,10 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { getCart, updateCartLine, removeCartLine, formatPrice, type Cart, type CartLine } from '@/lib/shopify'
 
-interface CartItem {
+interface LocalCartItem {
   id: number
   name: string
   winery: string
@@ -14,42 +15,142 @@ interface CartItem {
 }
 
 export default function CartPage() {
-  const [cart, setCart] = useState<CartItem[]>([])
+  const [shopifyCart, setShopifyCart] = useState<Cart | null>(null)
+  const [localCart, setLocalCart] = useState<LocalCartItem[]>([])
   const [loading, setLoading] = useState(true)
+  const [isShopifyEnabled, setIsShopifyEnabled] = useState(false)
+  const [updating, setUpdating] = useState<string | null>(null)
 
   useEffect(() => {
-    const savedCart = JSON.parse(localStorage.getItem('sommelier-cart') || '[]')
-    setCart(savedCart)
-    setLoading(false)
+    async function loadCart() {
+      // Check if Shopify is configured
+      const shopifyConfigured = !!(
+        process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN &&
+        process.env.NEXT_PUBLIC_SHOPIFY_STOREFRONT_TOKEN
+      )
+      setIsShopifyEnabled(shopifyConfigured)
+
+      if (shopifyConfigured) {
+        // Load Shopify cart
+        const cartId = localStorage.getItem('sommelier-shopify-cart-id')
+        if (cartId) {
+          try {
+            const cart = await getCart(cartId)
+            if (cart) {
+              setShopifyCart(cart)
+            }
+          } catch (error) {
+            console.error('Error loading Shopify cart:', error)
+          }
+        }
+      } else {
+        // Load local cart
+        const savedCart = JSON.parse(localStorage.getItem('sommelier-cart') || '[]')
+        setLocalCart(savedCart)
+      }
+
+      setLoading(false)
+    }
+
+    loadCart()
   }, [])
 
-  const updateQuantity = (id: number, newQuantity: number) => {
+  // Shopify cart operations
+  const updateShopifyQuantity = useCallback(async (lineId: string, newQuantity: number) => {
+    if (!shopifyCart) return
+
+    setUpdating(lineId)
+    try {
+      if (newQuantity <= 0) {
+        const updatedCart = await removeCartLine(shopifyCart.id, lineId)
+        setShopifyCart(updatedCart)
+      } else {
+        const updatedCart = await updateCartLine(shopifyCart.id, lineId, newQuantity)
+        setShopifyCart(updatedCart)
+      }
+    } catch (error) {
+      console.error('Error updating cart:', error)
+    } finally {
+      setUpdating(null)
+    }
+  }, [shopifyCart])
+
+  const removeShopifyItem = useCallback(async (lineId: string) => {
+    if (!shopifyCart) return
+
+    setUpdating(lineId)
+    try {
+      const updatedCart = await removeCartLine(shopifyCart.id, lineId)
+      setShopifyCart(updatedCart)
+    } catch (error) {
+      console.error('Error removing item:', error)
+    } finally {
+      setUpdating(null)
+    }
+  }, [shopifyCart])
+
+  // Local cart operations
+  const updateLocalQuantity = (id: number, newQuantity: number) => {
     if (newQuantity < 1) {
-      removeItem(id)
+      removeLocalItem(id)
       return
     }
 
-    const updatedCart = cart.map(item =>
+    const updatedCart = localCart.map(item =>
       item.id === id ? { ...item, quantity: newQuantity } : item
     )
-    setCart(updatedCart)
+    setLocalCart(updatedCart)
     localStorage.setItem('sommelier-cart', JSON.stringify(updatedCart))
   }
 
-  const removeItem = (id: number) => {
-    const updatedCart = cart.filter(item => item.id !== id)
-    setCart(updatedCart)
+  const removeLocalItem = (id: number) => {
+    const updatedCart = localCart.filter(item => item.id !== id)
+    setLocalCart(updatedCart)
     localStorage.setItem('sommelier-cart', JSON.stringify(updatedCart))
   }
 
   const clearCart = () => {
-    setCart([])
-    localStorage.removeItem('sommelier-cart')
+    if (isShopifyEnabled) {
+      localStorage.removeItem('sommelier-shopify-cart-id')
+      setShopifyCart(null)
+    } else {
+      setLocalCart([])
+      localStorage.removeItem('sommelier-cart')
+    }
   }
 
-  const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
-  const shipping = subtotal > 100 ? 0 : 5.99
-  const total = subtotal + shipping
+  // Calculate totals
+  const getCartData = () => {
+    if (isShopifyEnabled && shopifyCart) {
+      const items = shopifyCart.lines.edges.map(edge => edge.node)
+      const subtotal = parseFloat(shopifyCart.cost.subtotalAmount.amount)
+      const total = parseFloat(shopifyCart.cost.totalAmount.amount)
+      const currency = shopifyCart.cost.totalAmount.currencyCode
+
+      return {
+        items,
+        itemCount: shopifyCart.totalQuantity,
+        subtotal: formatPrice(subtotal.toString(), currency),
+        total: formatPrice(total.toString(), currency),
+        checkoutUrl: shopifyCart.checkoutUrl,
+        isEmpty: shopifyCart.totalQuantity === 0,
+      }
+    } else {
+      const subtotal = localCart.reduce((sum, item) => sum + item.price * item.quantity, 0)
+      const shipping = subtotal > 100 ? 0 : 5.99
+      const total = subtotal + shipping
+
+      return {
+        items: localCart,
+        itemCount: localCart.reduce((s, i) => s + i.quantity, 0),
+        subtotal: `£${subtotal.toFixed(2)}`,
+        total: `£${total.toFixed(2)}`,
+        shipping: shipping === 0 ? 'Free' : `£${shipping.toFixed(2)}`,
+        checkoutUrl: null,
+        isEmpty: localCart.length === 0,
+      }
+    }
+  }
 
   if (loading) {
     return (
@@ -59,6 +160,8 @@ export default function CartPage() {
     )
   }
 
+  const cartData = getCartData()
+
   return (
     <div className="min-h-screen bg-[#faf9f7]">
       {/* Header */}
@@ -67,7 +170,7 @@ export default function CartPage() {
           <div className="flex items-center justify-between h-16">
             <Link href="/" className="flex items-center gap-2">
               <span className="text-2xl">🍷</span>
-              <span className="font-bold text-xl text-stone-900">Sommelier<span className="text-wine-600">Quest</span></span>
+              <span className="font-bold text-xl text-stone-900">Aionysus</span>
             </Link>
             <Link href="/wines" className="text-stone-600 hover:text-wine-600 transition-colors">
               Browse Wines
@@ -77,19 +180,26 @@ export default function CartPage() {
       </header>
 
       <main className="max-w-4xl mx-auto px-4 py-8">
-        <h1 className="text-3xl font-serif font-bold text-stone-900 mb-8">Your Cart</h1>
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-3xl font-serif font-bold text-stone-900">Your Cart</h1>
+          {isShopifyEnabled && (
+            <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
+              Shopify Checkout
+            </span>
+          )}
+        </div>
 
-        {cart.length === 0 ? (
+        {cartData.isEmpty ? (
           <div className="text-center py-16">
             <div className="text-6xl mb-4">🍷</div>
             <h2 className="text-xl font-semibold text-stone-900 mb-2">Your cart is empty</h2>
-            <p className="text-stone-500 mb-6">Ask Sofia for wine recommendations or browse our collection</p>
+            <p className="text-stone-500 mb-6">Ask Aionysus for wine recommendations or browse our collection</p>
             <div className="flex justify-center gap-4">
               <Link
                 href="/"
                 className="px-6 py-3 bg-wine-600 text-white rounded-lg font-semibold hover:bg-wine-700 transition-colors"
               >
-                Talk to Sofia
+                Talk to Aionysus
               </Link>
               <Link
                 href="/wines"
@@ -103,56 +213,118 @@ export default function CartPage() {
           <div className="grid lg:grid-cols-3 gap-8">
             {/* Cart Items */}
             <div className="lg:col-span-2 space-y-4">
-              {cart.map((item) => (
-                <div
-                  key={item.id}
-                  className="bg-white rounded-xl border border-stone-100 p-4 flex gap-4"
-                >
-                  <div className="w-20 h-28 relative flex-shrink-0">
-                    <Image
-                      src={item.image_url || 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=400&h=600&fit=crop'}
-                      alt={item.name}
-                      fill
-                      className="object-cover rounded-lg"
-                    />
-                  </div>
+              {isShopifyEnabled && shopifyCart ? (
+                // Shopify cart items
+                shopifyCart.lines.edges.map(({ node: item }) => (
+                  <div
+                    key={item.id}
+                    className="bg-white rounded-xl border border-stone-100 p-4 flex gap-4"
+                  >
+                    <div className="w-20 h-28 relative flex-shrink-0">
+                      <Image
+                        src={item.merchandise.product.featuredImage?.url || 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=400&h=600&fit=crop'}
+                        alt={item.merchandise.product.title}
+                        fill
+                        className="object-cover rounded-lg"
+                      />
+                    </div>
 
-                  <div className="flex-1">
-                    <Link href={`/wines/${item.id}`} className="font-semibold text-stone-900 hover:text-wine-600">
-                      {item.name}
-                    </Link>
-                    <p className="text-sm text-stone-500">{item.winery}</p>
-                    <p className="font-bold text-wine-600 mt-1">£{item.price.toFixed(2)}</p>
+                    <div className="flex-1">
+                      <Link href={`/wines`} className="font-semibold text-stone-900 hover:text-wine-600">
+                        {item.merchandise.product.title}
+                      </Link>
+                      <p className="text-sm text-stone-500">{item.merchandise.title}</p>
+                      <p className="font-bold text-wine-600 mt-1">
+                        {formatPrice(item.merchandise.price.amount, item.merchandise.price.currencyCode)}
+                      </p>
 
-                    <div className="flex items-center justify-between mt-3">
-                      <div className="flex items-center border border-stone-200 rounded-lg">
+                      <div className="flex items-center justify-between mt-3">
+                        <div className="flex items-center border border-stone-200 rounded-lg">
+                          <button
+                            onClick={() => updateShopifyQuantity(item.id, item.quantity - 1)}
+                            disabled={updating === item.id}
+                            className="px-3 py-1 text-stone-600 hover:bg-stone-50 transition-colors disabled:opacity-50"
+                          >
+                            -
+                          </button>
+                          <span className="px-3 py-1 font-medium">
+                            {updating === item.id ? '...' : item.quantity}
+                          </span>
+                          <button
+                            onClick={() => updateShopifyQuantity(item.id, item.quantity + 1)}
+                            disabled={updating === item.id}
+                            className="px-3 py-1 text-stone-600 hover:bg-stone-50 transition-colors disabled:opacity-50"
+                          >
+                            +
+                          </button>
+                        </div>
+
                         <button
-                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                          className="px-3 py-1 text-stone-600 hover:bg-stone-50 transition-colors"
+                          onClick={() => removeShopifyItem(item.id)}
+                          disabled={updating === item.id}
+                          className="text-stone-400 hover:text-red-500 transition-colors disabled:opacity-50"
                         >
-                          -
-                        </button>
-                        <span className="px-3 py-1 font-medium">{item.quantity}</span>
-                        <button
-                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                          className="px-3 py-1 text-stone-600 hover:bg-stone-50 transition-colors"
-                        >
-                          +
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
                         </button>
                       </div>
-
-                      <button
-                        onClick={() => removeItem(item.id)}
-                        className="text-stone-400 hover:text-red-500 transition-colors"
-                      >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                      </button>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))
+              ) : (
+                // Local cart items
+                localCart.map((item) => (
+                  <div
+                    key={item.id}
+                    className="bg-white rounded-xl border border-stone-100 p-4 flex gap-4"
+                  >
+                    <div className="w-20 h-28 relative flex-shrink-0">
+                      <Image
+                        src={item.image_url || 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=400&h=600&fit=crop'}
+                        alt={item.name}
+                        fill
+                        className="object-cover rounded-lg"
+                      />
+                    </div>
+
+                    <div className="flex-1">
+                      <Link href={`/wines/${item.id}`} className="font-semibold text-stone-900 hover:text-wine-600">
+                        {item.name}
+                      </Link>
+                      <p className="text-sm text-stone-500">{item.winery}</p>
+                      <p className="font-bold text-wine-600 mt-1">£{item.price.toFixed(2)}</p>
+
+                      <div className="flex items-center justify-between mt-3">
+                        <div className="flex items-center border border-stone-200 rounded-lg">
+                          <button
+                            onClick={() => updateLocalQuantity(item.id, item.quantity - 1)}
+                            className="px-3 py-1 text-stone-600 hover:bg-stone-50 transition-colors"
+                          >
+                            -
+                          </button>
+                          <span className="px-3 py-1 font-medium">{item.quantity}</span>
+                          <button
+                            onClick={() => updateLocalQuantity(item.id, item.quantity + 1)}
+                            className="px-3 py-1 text-stone-600 hover:bg-stone-50 transition-colors"
+                          >
+                            +
+                          </button>
+                        </div>
+
+                        <button
+                          onClick={() => removeLocalItem(item.id)}
+                          className="text-stone-400 hover:text-red-500 transition-colors"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
 
               <button
                 onClick={clearCart}
@@ -169,30 +341,38 @@ export default function CartPage() {
 
                 <div className="space-y-3 mb-6">
                   <div className="flex justify-between text-stone-600">
-                    <span>Subtotal ({cart.reduce((s, i) => s + i.quantity, 0)} items)</span>
-                    <span>£{subtotal.toFixed(2)}</span>
+                    <span>Subtotal ({cartData.itemCount} items)</span>
+                    <span>{cartData.subtotal}</span>
                   </div>
-                  <div className="flex justify-between text-stone-600">
-                    <span>Shipping</span>
-                    <span>{shipping === 0 ? 'Free' : `£${shipping.toFixed(2)}`}</span>
-                  </div>
-                  {subtotal < 100 && (
-                    <p className="text-xs text-stone-500">
-                      Spend £{(100 - subtotal).toFixed(2)} more for free shipping
-                    </p>
+                  {!isShopifyEnabled && (
+                    <div className="flex justify-between text-stone-600">
+                      <span>Shipping</span>
+                      <span>{cartData.shipping}</span>
+                    </div>
                   )}
                   <div className="border-t border-stone-100 pt-3 flex justify-between font-bold text-stone-900">
                     <span>Total</span>
-                    <span>£{total.toFixed(2)}</span>
+                    <span>{cartData.total}</span>
                   </div>
                 </div>
 
-                <button className="w-full py-3 bg-wine-600 text-white rounded-lg font-semibold hover:bg-wine-700 transition-colors mb-3">
-                  Checkout
-                </button>
+                {cartData.checkoutUrl ? (
+                  <a
+                    href={cartData.checkoutUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block w-full py-3 bg-wine-600 text-white text-center rounded-lg font-semibold hover:bg-wine-700 transition-colors mb-3"
+                  >
+                    Checkout
+                  </a>
+                ) : (
+                  <button className="w-full py-3 bg-wine-600 text-white rounded-lg font-semibold hover:bg-wine-700 transition-colors mb-3">
+                    Checkout
+                  </button>
+                )}
 
                 <p className="text-xs text-center text-stone-500">
-                  Demo only - no real orders processed
+                  {isShopifyEnabled ? 'Secure checkout powered by Shopify' : 'Demo only - no real orders processed'}
                 </p>
               </div>
             </div>

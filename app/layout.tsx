@@ -17,23 +17,23 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Sommelier AI | SommelierQuest - Free AI Wine Expert",
-  description: "Sommelier AI by SommelierQuest - your free AI sommelier for instant wine recommendations and food pairings. The best sommelier AI app for wine advice.",
-  keywords: ["sommelier AI", "sommelier ai", "AI sommelier", "SommelierQuest", "wine recommendations", "wine pairing", "wine expert", "AI wine advisor", "sommelier ai app", "ai wine sommelier", "free sommelier"],
-  authors: [{ name: "SommelierQuest" }],
-  creator: "SommelierQuest",
-  metadataBase: new URL("https://sommelier.quest"),
+  title: "AI Sommelier & AI Wine Taster | Aionysus - Free Wine Expert",
+  description: "Aionysus is your AI sommelier and AI wine taster. Get instant wine recommendations, food pairings, and investment advice for premium Bordeaux. Free to use.",
+  keywords: ["AI sommelier", "AI wine taster", "sommelier AI", "wine recommendations", "wine pairing", "AI wine advisor", "Bordeaux wine", "wine investment", "Aionysus", "voice AI wine"],
+  authors: [{ name: "Aionysus" }],
+  creator: "Aionysus",
+  metadataBase: new URL("https://aionysus.wine"),
   openGraph: {
     type: "website",
     locale: "en_US",
-    title: "Sommelier AI | SommelierQuest - Free AI Wine Expert",
-    description: "Sommelier AI by SommelierQuest provides instant wine recommendations and food pairings. The best free sommelier AI for wine advice.",
-    siteName: "SommelierQuest",
+    title: "AI Sommelier & AI Wine Taster | Aionysus",
+    description: "Aionysus is your AI sommelier and AI wine taster. Instant wine recommendations and food pairings. Free to use.",
+    siteName: "Aionysus",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Sommelier AI | SommelierQuest - Free AI Wine Expert",
-    description: "Sommelier AI by SommelierQuest - instant wine recommendations and food pairings. Free AI sommelier app.",
+    title: "AI Sommelier & AI Wine Taster | Aionysus",
+    description: "Aionysus - your AI sommelier and AI wine taster. Free instant wine recommendations.",
   },
   robots: {
     index: true,
@@ -45,9 +45,9 @@ export const metadata: Metadata = {
 const organizationJsonLd = {
   "@context": "https://schema.org",
   "@type": "Organization",
-  name: "SommelierQuest",
-  description: "Sommelier AI - AI-powered wine advisor. Get personalized wine recommendations and food pairings.",
-  url: "https://sommelier.quest",
+  name: "Aionysus",
+  description: "Aionysus - AI sommelier and AI wine taster. Get personalized wine recommendations, food pairings, and investment advice.",
+  url: "https://aionysus.wine",
 };
 
 export default function RootLayout({

@@ -8,7 +8,7 @@ export default function HomePage() {
       <div className="fixed inset-0 flex items-center justify-center pointer-events-none opacity-10 z-0">
         <img
           src="/aionysus.jpg"
-          alt=""
+          alt="Aionysus AI Sommelier background"
           className="w-full h-full object-cover"
         />
       </div>
@@ -16,7 +16,7 @@ export default function HomePage() {
       {/* BETA Badge */}
       <div className="fixed top-4 right-4 z-40 flex items-center gap-2 bg-gradient-to-r from-stone-900 to-stone-800 text-white px-4 py-2 rounded-full text-xs font-mono tracking-wider border border-stone-700 shadow-lg">
         <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-        BETA — DEMO DATABASE
+        BETA
       </div>
 
       {/* Header */}
@@ -25,6 +25,8 @@ export default function HomePage() {
       {/* Hero Section */}
       <main className="relative z-10">
         <section className="max-w-5xl mx-auto px-4 pt-20 pb-16 relative">
+          {/* H1 for SEO */}
+          <h1 className="sr-only">AI Sommelier & AI Wine Taster - Aionysus</h1>
 
           {/* Voice Widget - Lazy loaded */}
           <LazyVoiceWidget />
@@ -32,16 +34,16 @@ export default function HomePage() {
           {/* Supporting text */}
           <div className="text-center mt-8 relative z-10">
             <p className="text-base text-stone-500 max-w-xl mx-auto italic">
-              Your personal sommelier for investment-grade Bordeaux
+              Your AI sommelier for premium wine recommendations
             </p>
           </div>
         </section>
 
-        {/* How Aionysus Works */}
+        {/* How Our AI Sommelier Works */}
         <section id="how-sommelier-ai-works" className="bg-gradient-to-b from-white to-stone-50 py-24">
           <div className="max-w-4xl mx-auto px-4">
             <h2 className="text-4xl md:text-5xl font-serif font-bold text-stone-900 text-center mb-6">
-              How Aionysus Works
+              How Our AI Sommelier Works
             </h2>
             <p className="text-lg text-stone-600 text-center max-w-2xl mx-auto mb-16">
               Talk to Aionysus like you would a sommelier. Tell her what you're after. Get expert recommendations instantly.
@@ -67,17 +69,17 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Why Aionysus */}
+        {/* Why Choose an AI Wine Taster */}
         <section className="py-24 bg-gradient-to-b from-stone-50 to-white">
           <div className="max-w-4xl mx-auto px-4">
             <h2 className="text-4xl md:text-5xl font-serif font-bold text-stone-900 text-center mb-6">
-              Why Aionysus
+              Why Choose an AI Wine Taster
             </h2>
             <p className="text-lg text-stone-600 text-center max-w-2xl mx-auto mb-4">
               Buying fine wine shouldn't require a sommelier on retainer. Aionysus gives you that expertise—instantly, conversationally, 24/7.
             </p>
             <p className="text-base text-stone-500 text-center max-w-2xl mx-auto mb-12">
-              Currently featuring 40 investment-grade Red Bordeaux (1952-2000). First Growths, Grand Cru Classé, collector pieces.
+              Currently featuring 500+ wines across premium regions. Investment-grade Bordeaux, First Growths, Grand Cru Classé, and more.
             </p>
 
             <div className="grid md:grid-cols-3 gap-6">
@@ -120,7 +122,7 @@ export default function HomePage() {
                   What wines do you have?
                   <span className="text-stone-400 group-open:rotate-180 transition-transform">▼</span>
                 </summary>
-                <p className="px-6 pb-4 text-stone-600">Currently 40 investment-grade Red Bordeaux. First Growths, Grand Cru Classé, legendary vintages from 1952-2000. We're adding more regions soon. Ask Aionysus—she'll tell you what's available.</p>
+                <p className="px-6 pb-4 text-stone-600">Over 500 wines and growing. Investment-grade Bordeaux, legendary vintages, First Growths, and Grand Cru Classé. Ask Aionysus—she'll tell you what's available.</p>
               </details>
               <details className="bg-white rounded-xl border border-stone-100 group shadow-sm">
                 <summary className="px-6 py-4 cursor-pointer font-semibold text-stone-900 flex justify-between items-center hover:text-wine-600">
@@ -137,6 +139,91 @@ export default function HomePage() {
                 <p className="px-6 pb-4 text-stone-600">Sure. Drop us a line at <a href="mailto:hello@aionysus.wine" className="text-wine-600 hover:underline">hello@aionysus.wine</a></p>
               </details>
             </div>
+          </div>
+        </section>
+
+        {/* Your Journey with Our AI Sommelier - SEO Section */}
+        <section className="py-24 bg-gradient-to-b from-white to-stone-50 border-t border-stone-100">
+          <div className="max-w-4xl mx-auto px-4">
+            <h2 className="text-3xl md:text-4xl font-serif font-bold text-stone-900 text-center mb-4">
+              Your Journey with Aionysus
+            </h2>
+            <p className="text-stone-600 text-center max-w-2xl mx-auto mb-16">
+              From first sip to last drop, our AI sommelier guides you through every step of discovering exceptional wine.
+            </p>
+
+            {/* Timeline */}
+            <div className="relative">
+              {/* Timeline line */}
+              <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-px bg-wine-200 -translate-x-1/2"></div>
+
+              <div className="space-y-12 md:space-y-0">
+                {/* Step 1 */}
+                <div className="md:grid md:grid-cols-2 md:gap-8 md:items-center md:mb-16">
+                  <div className="md:text-right md:pr-12">
+                    <span className="inline-block text-wine-600 font-mono text-sm mb-2">01</span>
+                    <h3 className="font-bold text-stone-900 text-xl mb-2">Search</h3>
+                    <p className="text-stone-600">Tell our AI wine taster what you're looking for. Budget, occasion, food pairing, or investment goal—speak naturally, and Aionysus understands.</p>
+                  </div>
+                  <div className="hidden md:flex items-center justify-start pl-12">
+                    <div className="w-12 h-12 bg-wine-100 rounded-full flex items-center justify-center text-2xl">🔍</div>
+                  </div>
+                </div>
+
+                {/* Step 2 */}
+                <div className="md:grid md:grid-cols-2 md:gap-8 md:items-center md:mb-16">
+                  <div className="hidden md:flex items-center justify-end pr-12">
+                    <div className="w-12 h-12 bg-wine-100 rounded-full flex items-center justify-center text-2xl">💡</div>
+                  </div>
+                  <div className="md:pl-12">
+                    <span className="inline-block text-wine-600 font-mono text-sm mb-2">02</span>
+                    <h3 className="font-bold text-stone-900 text-xl mb-2">Advise</h3>
+                    <p className="text-stone-600">Your AI sommelier analyses 500+ wines instantly. She considers vintage, classification, drinking window, and investment potential to find your perfect match.</p>
+                  </div>
+                </div>
+
+                {/* Step 3 */}
+                <div className="md:grid md:grid-cols-2 md:gap-8 md:items-center md:mb-16">
+                  <div className="md:text-right md:pr-12">
+                    <span className="inline-block text-wine-600 font-mono text-sm mb-2">03</span>
+                    <h3 className="font-bold text-stone-900 text-xl mb-2">Select</h3>
+                    <p className="text-stone-600">Receive one expert recommendation at a time—complete with tasting notes, food pairings, critic scores, and real pricing. No walls of bottles to scroll through.</p>
+                  </div>
+                  <div className="hidden md:flex items-center justify-start pl-12">
+                    <div className="w-12 h-12 bg-wine-100 rounded-full flex items-center justify-center text-2xl">🍷</div>
+                  </div>
+                </div>
+
+                {/* Step 4 */}
+                <div className="md:grid md:grid-cols-2 md:gap-8 md:items-center md:mb-16">
+                  <div className="hidden md:flex items-center justify-end pr-12">
+                    <div className="w-12 h-12 bg-wine-100 rounded-full flex items-center justify-center text-2xl">🛒</div>
+                  </div>
+                  <div className="md:pl-12">
+                    <span className="inline-block text-wine-600 font-mono text-sm mb-2">04</span>
+                    <h3 className="font-bold text-stone-900 text-xl mb-2">Checkout</h3>
+                    <p className="text-stone-600">Add to cart and complete your purchase. Case discounts, trade pricing, and delivery handled seamlessly. Collecting or investing—we've got you covered.</p>
+                  </div>
+                </div>
+
+                {/* Step 5 */}
+                <div className="md:grid md:grid-cols-2 md:gap-8 md:items-center">
+                  <div className="md:text-right md:pr-12">
+                    <span className="inline-block text-wine-600 font-mono text-sm mb-2">05</span>
+                    <h3 className="font-bold text-stone-900 text-xl mb-2">Enjoy</h3>
+                    <p className="text-stone-600">Savour a perfectly chosen bottle. Whether it's a Tuesday night treat or a milestone celebration, your AI wine taster helped you find something special.</p>
+                  </div>
+                  <div className="hidden md:flex items-center justify-start pl-12">
+                    <div className="w-12 h-12 bg-wine-100 rounded-full flex items-center justify-center text-2xl">✨</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom CTA text */}
+            <p className="text-center text-stone-500 mt-16 max-w-xl mx-auto">
+              Aionysus combines the expertise of a master sommelier with the convenience of AI. Whether you're new to wine or a seasoned collector, our AI sommelier and AI wine taster is ready to help you discover your next favourite bottle.
+            </p>
           </div>
         </section>
       </main>

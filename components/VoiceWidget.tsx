@@ -99,6 +99,27 @@ const WINE_TOOLS = [
     parameters: '{ "type": "object", "required": ["use_case"], "properties": { "use_case": { "type": "string", "description": "Use case: investment, event, fine_dining" } } }',
     fallback_content: 'Unable to get recommendations at the moment.',
   },
+  {
+    type: 'function' as const,
+    name: 'add_to_cart',
+    description: 'Add a wine to the shopping cart. Use when customer confirms they want to buy a specific wine.',
+    parameters: '{ "type": "object", "required": ["wine_name"], "properties": { "wine_name": { "type": "string", "description": "Name of the wine to add" }, "wine_id": { "type": "number", "description": "Database ID of the wine" }, "quantity": { "type": "number", "description": "Number of bottles (default 1)" } } }',
+    fallback_content: 'Unable to add to cart at the moment.',
+  },
+  {
+    type: 'function' as const,
+    name: 'get_cart',
+    description: 'Get current shopping cart contents and total',
+    parameters: '{ "type": "object", "properties": {} }',
+    fallback_content: 'Unable to get cart at the moment.',
+  },
+  {
+    type: 'function' as const,
+    name: 'checkout',
+    description: 'Initiate checkout when customer is ready to complete purchase',
+    parameters: '{ "type": "object", "properties": {} }',
+    fallback_content: 'Unable to checkout at the moment.',
+  },
 ]
 
 function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?: string }) {
@@ -108,6 +129,9 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
   const [wines, setWines] = useState<Wine[]>([])
   const [detectedWines, setDetectedWines] = useState<Map<number, Wine[]>>(new Map())
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
+  const [shopifyCartId, setShopifyCartId] = useState<string | null>(null)
+  const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null)
+  const [cartCount, setCartCount] = useState(0)
 
   // Log status changes for debugging
   useEffect(() => {
@@ -132,6 +156,12 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
         if (profileResponse.ok) {
           const profileData = await profileResponse.json()
           setUserProfile(profileData)
+        }
+
+        // Load Shopify cart ID from localStorage
+        const savedCartId = localStorage.getItem('sommelier-shopify-cart-id')
+        if (savedCartId) {
+          setShopifyCartId(savedCartId)
         }
       } catch (error) {
         console.error('Error fetching data:', error)
@@ -188,6 +218,51 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
               body: JSON.stringify(parameters || {}),
             })
             result = await response.json()
+            break
+
+          case 'add_to_cart':
+            response = await fetch('/api/hume-tools/add-to-cart', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                ...parameters,
+                cart_id: shopifyCartId,
+              }),
+            })
+            result = await response.json()
+            // Update cart state if successful
+            if (result.success && result.cart) {
+              setShopifyCartId(result.cart.id)
+              localStorage.setItem('sommelier-shopify-cart-id', result.cart.id)
+              setCartCount(result.cart.total_items)
+              if (result.cart.checkout_url) {
+                setCheckoutUrl(result.cart.checkout_url)
+              }
+            }
+            break
+
+          case 'get_cart':
+            response = await fetch('/api/hume-tools/get-cart', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ cart_id: shopifyCartId }),
+            })
+            result = await response.json()
+            if (result.success && result.cart) {
+              setCartCount(result.cart.total_items)
+            }
+            break
+
+          case 'checkout':
+            response = await fetch('/api/hume-tools/checkout', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ cart_id: shopifyCartId }),
+            })
+            result = await response.json()
+            if (result.success && result.checkout?.url) {
+              setCheckoutUrl(result.checkout.url)
+            }
             break
 
           default:
@@ -558,7 +633,22 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
         </div>
       )}
 
-      {/* Cart link when items are in cart */}
+      {/* Checkout button when checkout URL is available */}
+      {checkoutUrl && cartCount > 0 && (
+        <a
+          href={checkoutUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="fixed bottom-20 right-6 bg-green-600 text-white px-6 py-3 rounded-full shadow-lg hover:bg-green-700 transition-all z-50 flex items-center gap-2 animate-bounce"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          </svg>
+          Checkout ({cartCount})
+        </a>
+      )}
+
+      {/* Cart link */}
       <Link
         href="/cart"
         className="fixed bottom-6 right-6 bg-wine-600 text-white p-4 rounded-full shadow-lg hover:bg-wine-700 transition-colors z-50"
@@ -567,6 +657,11 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
         </svg>
+        {cartCount > 0 && (
+          <span className="absolute -top-1 -right-1 bg-green-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+            {cartCount}
+          </span>
+        )}
       </Link>
     </div>
   )
