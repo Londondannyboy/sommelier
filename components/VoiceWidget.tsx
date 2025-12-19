@@ -176,6 +176,8 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
   const [wines, setWines] = useState<Wine[]>([])
   const [detectedWines, setDetectedWines] = useState<Map<number, Wine[]>>(new Map())
   const [discussedWines, setDiscussedWines] = useState<Wine[]>([])
+  const [localCart, setLocalCart] = useState<Array<{ id: number; name: string; winery: string; price: number; quantity: number; image_url: string }>>([])
+  const [showLastMessage, setShowLastMessage] = useState(true)
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
   const [shopifyCartId, setShopifyCartId] = useState<string | null>(null)
   const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null)
@@ -187,6 +189,25 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
     if (status.value === 'connected') setManualConnected(true)
     if (status.value === 'disconnected') setManualConnected(false)
   }, [status.value])
+
+  // Sync local cart from localStorage
+  useEffect(() => {
+    function syncCart() {
+      try {
+        const cart = JSON.parse(localStorage.getItem('sommelier-cart') || '[]')
+        setLocalCart(cart)
+      } catch {
+        setLocalCart([])
+      }
+    }
+    syncCart()
+    window.addEventListener('storage', syncCart)
+    window.addEventListener('cart-updated', syncCart)
+    return () => {
+      window.removeEventListener('storage', syncCart)
+      window.removeEventListener('cart-updated', syncCart)
+    }
+  }, [])
 
   // Fetch wines and user profile on mount
   useEffect(() => {
@@ -483,6 +504,8 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
     }
 
     localStorage.setItem('sommelier-cart', JSON.stringify(existingCart))
+    setLocalCart(existingCart)
+    window.dispatchEvent(new Event('cart-updated'))
   }, [])
 
   // Use both Hume status AND manual tracking (status doesn't always update)
@@ -553,7 +576,7 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
           onClick={isConnected ? handleDisconnect : handleConnect}
           disabled={isConnecting}
           className="relative z-10 group focus:outline-none"
-          aria-label={isConnected ? "Stop conversation with Aionysus" : "Tap to speak with Aionysus"}
+          aria-label={isConnected ? "End session with the Goddess" : "Tap to commune with Aionysus"}
         >
           {/* Circular container that clips the square icon */}
           <div className={`relative w-72 h-72 md:w-80 md:h-80 lg:w-96 lg:h-96 rounded-full overflow-hidden ${
@@ -632,21 +655,21 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
         {isConnecting ? (
           <>
             <div className="w-4 h-4 border-2 border-gold-800 border-t-transparent rounded-full animate-spin" />
-            Connecting...
+            Summoning...
           </>
         ) : isConnected ? (
           <>
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
               <rect x="6" y="6" width="12" height="12" rx="2" />
             </svg>
-            End Conversation
+            End Session
           </>
         ) : (
           <>
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
               <path d="M8 5v14l11-7z" />
             </svg>
-            Speak with Aionysus
+            Commune with the Goddess
           </>
         )}
       </button>
@@ -681,14 +704,14 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
         isPlaying ? 'text-gold-300' : 'text-gold-500'
       }`}>
         {isConnecting
-          ? "Connecting to Aionysus..."
+          ? "Summoning the Goddess..."
           : isPlaying
-          ? "Aionysus is speaking..."
+          ? "The Goddess speaks..."
           : isConnected
-          ? "Aionysus is listening..."
+          ? "She awaits your words..."
           : isError
-          ? "Connection error — tap to try again"
-          : "Tap to speak with Aionysus"}
+          ? "The connection fades — tap to try again"
+          : "Tap to commune with Aionysus"}
       </p>
 
       {/* Version & Info Panel - Updated SKU count, no email */}
@@ -705,50 +728,78 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
         </p>
       </div>
 
-      {messages.length > 0 && (
-        <div className="w-full max-w-2xl bg-stone-50 rounded-2xl p-6 max-h-[500px] overflow-y-auto mb-8">
-          <div className="space-y-3">
-            {messages.map((msg, index) => (
-              <div key={index}>
-                <div
-                  className={`flex ${msg.type === 'user_message' ? 'justify-end' : 'justify-start'}`}
-                >
-                  <div
-                    className={`max-w-[85%] rounded-2xl px-4 py-2.5 ${
-                      msg.type === 'user_message'
-                        ? 'bg-gold-600 text-white'
-                        : 'bg-white border border-stone-200 text-stone-700'
-                    }`}
-                  >
-                    <p className="text-sm leading-relaxed">
-                      {msg.type === 'user_message' && msg.message?.content}
-                      {msg.type === 'assistant_message' && msg.message?.content}
-                    </p>
+      {/* Latest Wine Mentioned - Show current recommendation */}
+      {isConnected && discussedWines.length > 0 && (
+        <div className="w-full max-w-md mb-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <p className="text-gold-400 text-xs font-medium text-center mb-3">The Goddess Recommends</p>
+          <WineCard wine={discussedWines[discussedWines.length - 1]} onAddToCart={handleAddToCart} />
+        </div>
+      )}
+
+      {/* Your Cart Dashboard - Voice Shopping Results */}
+      {localCart.length > 0 && (
+        <div className="w-full max-w-2xl mb-8">
+          <div className="bg-gradient-to-b from-stone-900/90 to-stone-950/95 rounded-2xl border border-gold-700/30 overflow-hidden">
+            {/* Cart Header */}
+            <div className="flex items-center justify-between px-5 py-4 border-b border-gold-700/20">
+              <div className="flex items-center gap-2">
+                <svg className="w-5 h-5 text-gold-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                <h3 className="text-gold-300 font-semibold">Your Selection</h3>
+              </div>
+              <span className="text-gold-500 text-sm">
+                {localCart.reduce((sum, item) => sum + item.quantity, 0)} bottle{localCart.reduce((sum, item) => sum + item.quantity, 0) !== 1 ? 's' : ''}
+              </span>
+            </div>
+
+            {/* Cart Items */}
+            <div className="divide-y divide-gold-700/20">
+              {localCart.map((item) => (
+                <div key={item.id} className="flex items-center gap-3 px-5 py-3">
+                  <img
+                    src={item.image_url || '/wine-placeholder.svg'}
+                    alt={item.name}
+                    className="w-12 h-16 object-cover rounded"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white text-sm font-medium truncate">{item.name}</p>
+                    <p className="text-stone-400 text-xs">{item.winery}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-gold-400 font-bold">£{item.price.toLocaleString()}</p>
+                    <p className="text-stone-500 text-xs">Qty: {item.quantity}</p>
                   </div>
                 </div>
+              ))}
+            </div>
 
-                {/* Wine cards for detected wines */}
-                {detectedWines.get(index)?.map(wine => (
-                  <div key={wine.id} className="flex justify-start mt-2">
-                    <WineCard wine={wine} onAddToCart={handleAddToCart} />
-                  </div>
-                ))}
+            {/* Cart Footer */}
+            <div className="px-5 py-4 bg-gold-900/20 border-t border-gold-700/20">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-gold-300 font-medium">Total</span>
+                <span className="text-gold-400 font-bold text-xl">
+                  £{localCart.reduce((sum, item) => sum + (item.price * item.quantity), 0).toLocaleString()}
+                </span>
               </div>
-            ))}
+              <Link
+                href="/cart"
+                className="block w-full text-center bg-gradient-to-r from-gold-500 to-gold-600 text-black font-bold py-3 rounded-lg hover:from-gold-400 hover:to-gold-500 transition-all shadow-[0_0_20px_rgba(212,165,10,0.3)]"
+              >
+                View Cart & Checkout
+              </Link>
+            </div>
           </div>
         </div>
       )}
 
-      {/* Wine History Strip - Shows all wines discussed */}
-      {discussedWines.length > 0 && (
+      {/* Wines Mentioned (smaller, below cart) */}
+      {discussedWines.length > 1 && (
         <div className="w-full max-w-2xl mb-8">
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-gold-400 text-sm font-medium">Wines Discussed</p>
-            <span className="text-gold-500/60 text-xs">{discussedWines.length} wine{discussedWines.length !== 1 ? 's' : ''}</span>
-          </div>
+          <p className="text-gold-500/60 text-xs font-medium mb-3">Also Discussed</p>
           <div className="overflow-x-auto scrollbar-hide">
             <div className="flex gap-3 pb-2">
-              {discussedWines.map((wine) => (
+              {discussedWines.slice(0, -1).map((wine) => (
                 <WineHistoryCard key={wine.id} wine={wine} onAddToCart={handleAddToCart} />
               ))}
             </div>
