@@ -18,14 +18,15 @@ interface Wine {
   vintage: number | null
 }
 
-// Price range options
+// Price range options - 'request' is for wines without a price
 const PRICE_RANGES = [
-  { label: 'All Prices', min: 0, max: Infinity },
-  { label: 'Under £500', min: 0, max: 500 },
-  { label: '£500 - £1,000', min: 500, max: 1000 },
-  { label: '£1,000 - £2,500', min: 1000, max: 2500 },
-  { label: '£2,500 - £5,000', min: 2500, max: 5000 },
-  { label: '£5,000+', min: 5000, max: Infinity },
+  { label: 'All Prices', value: 'all' },
+  { label: 'Price on Request', value: 'request' },
+  { label: 'Under £500', value: '0-500' },
+  { label: '£500 - £1,000', value: '500-1000' },
+  { label: '£1,000 - £2,500', value: '1000-2500' },
+  { label: '£2,500 - £5,000', value: '2500-5000' },
+  { label: '£5,000+', value: '5000+' },
 ]
 
 // Format price with proper currency
@@ -49,7 +50,7 @@ export default function WinesPage() {
 
   // Filter states
   const [typeFilter, setTypeFilter] = useState<string>('all')
-  const [priceFilter, setPriceFilter] = useState<number>(0)
+  const [priceFilter, setPriceFilter] = useState<string>('all')
   const [regionFilter, setRegionFilter] = useState<string>('all')
   const [wineryFilter, setWineryFilter] = useState<string>('all')
   const [searchQuery, setSearchQuery] = useState<string>('')
@@ -85,7 +86,7 @@ export default function WinesPage() {
   // Count active filters
   const activeFilterCount = [
     typeFilter !== 'all',
-    priceFilter !== 0,
+    priceFilter !== 'all',
     regionFilter !== 'all',
     wineryFilter !== 'all',
   ].filter(Boolean).length
@@ -93,7 +94,7 @@ export default function WinesPage() {
   // Clear all filters
   const clearFilters = () => {
     setTypeFilter('all')
-    setPriceFilter(0)
+    setPriceFilter('all')
     setRegionFilter('all')
     setWineryFilter('all')
     setSearchQuery('')
@@ -107,9 +108,20 @@ export default function WinesPage() {
       (w.color || '').toLowerCase() === typeFilter
 
     // Price filter
-    const priceRange = PRICE_RANGES[priceFilter]
-    const price = w.price_retail || 0
-    const matchesPrice = price >= priceRange.min && price < priceRange.max
+    let matchesPrice = true
+    if (priceFilter === 'request') {
+      matchesPrice = w.price_retail === null || w.price_retail === 0
+    } else if (priceFilter !== 'all') {
+      const price = w.price_retail
+      if (price === null || price === 0) {
+        matchesPrice = false
+      } else if (priceFilter === '5000+') {
+        matchesPrice = price >= 5000
+      } else {
+        const [min, max] = priceFilter.split('-').map(Number)
+        matchesPrice = price >= min && price < max
+      }
+    }
 
     // Region filter
     const matchesRegion = regionFilter === 'all' || w.region === regionFilter
@@ -223,11 +235,11 @@ export default function WinesPage() {
                   <label className="block text-gold-400 text-sm font-medium mb-2">Price Range</label>
                   <select
                     value={priceFilter}
-                    onChange={(e) => setPriceFilter(Number(e.target.value))}
+                    onChange={(e) => setPriceFilter(e.target.value)}
                     className="w-full px-4 py-2.5 rounded-lg bg-stone-800/80 border border-gold-700/30 text-gold-100 focus:outline-none focus:border-gold-500 transition-all"
                   >
-                    {PRICE_RANGES.map((range, idx) => (
-                      <option key={idx} value={idx}>{range.label}</option>
+                    {PRICE_RANGES.map((range) => (
+                      <option key={range.value} value={range.value}>{range.label}</option>
                     ))}
                   </select>
                 </div>
