@@ -88,6 +88,13 @@ export function NavBar() {
                           <p className="text-sm font-medium text-white">{user.displayName || 'User'}</p>
                           <p className="text-xs text-stone-400 truncate">{user.primaryEmail}</p>
                         </div>
+                        <Link
+                          href="/account"
+                          onClick={() => setShowMenu(false)}
+                          className="block w-full text-left px-4 py-2 text-sm text-stone-300 hover:bg-gold-500/10 hover:text-gold-400 transition-colors"
+                        >
+                          My Cellar
+                        </Link>
                         <button
                           onClick={() => { user.signOut(); setShowMenu(false) }}
                           className="w-full text-left px-4 py-2 text-sm text-stone-300 hover:bg-gold-500/10 hover:text-gold-400 transition-colors"
@@ -133,12 +140,14 @@ export function NavBar() {
             >
               Wines
             </Link>
-            <Link
-              href="/cart"
-              className="text-white/90 hover:text-gold-300 transition-all font-medium text-sm uppercase tracking-[0.2em] hover:drop-shadow-[0_0_8px_rgba(212,165,10,0.5)]"
-            >
-              Basket
-            </Link>
+            {user && (
+              <Link
+                href="/account"
+                className="text-white/90 hover:text-gold-300 transition-all font-medium text-sm uppercase tracking-[0.2em] hover:drop-shadow-[0_0_8px_rgba(212,165,10,0.5)]"
+              >
+                Cellar
+              </Link>
+            )}
           </nav>
         </div>
       </div>
