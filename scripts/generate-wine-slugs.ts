@@ -28,12 +28,15 @@ const sql = neon(DATABASE_URL)
  * Convert wine name + vintage to SEO-friendly slug
  * Examples:
  *   "Château Haut-Brion" + 1952 → "1952-chateau-haut-brion"
- *   "Château Margaux" + 2010 → "2010-chateau-margaux"
+ *   "2010 Ch Margaux" + 2010 → "2010-ch-margaux" (no duplicate year)
  *   "Dom Pérignon Rosé" + 2008 → "2008-dom-perignon-rose"
  */
 function generateSlug(name: string, vintage?: number | null): string {
-  // Start with vintage if available
-  let slug = vintage ? `${vintage}-` : ''
+  // Check if name already starts with the vintage year
+  const nameStartsWithVintage = vintage && name.trim().startsWith(String(vintage))
+
+  // Only prepend vintage if name doesn't already start with it
+  let slug = (vintage && !nameStartsWithVintage) ? `${vintage}-` : ''
 
   // Clean the wine name
   slug += name
