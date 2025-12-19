@@ -8,13 +8,13 @@ export function FloatingVoiceWidget() {
 
   return (
     <>
-      {/* Floating trigger button */}
+      {/* Floating trigger button - Divine Golden Glow */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`fixed bottom-6 right-6 z-50 w-16 h-16 rounded-full shadow-lg transition-all duration-300 hover:scale-110 ${
+        className={`fixed bottom-6 right-6 z-50 w-16 h-16 rounded-full transition-all duration-300 hover:scale-110 ${
           isOpen
-            ? 'bg-stone-800 text-white'
-            : 'bg-wine-600 text-white'
+            ? 'bg-stone-900 text-gold-400 shadow-lg'
+            : 'bg-gradient-to-br from-gold-500 to-gold-700 text-black shadow-[0_0_30px_rgba(212,165,10,0.5)] hover:shadow-[0_0_40px_rgba(212,165,10,0.7)]'
         }`}
         aria-label={isOpen ? 'Close Aionysus' : 'Talk to Aionysus'}
       >
@@ -30,21 +30,30 @@ export function FloatingVoiceWidget() {
         )}
       </button>
 
-      {/* Voice widget panel */}
+      {/* Voice widget panel - Divine Dark Theme */}
       {isOpen && (
-        <div className="fixed bottom-24 right-6 z-50 w-[400px] max-w-[calc(100vw-48px)] bg-white rounded-2xl shadow-2xl border border-stone-200 overflow-hidden">
-          <div className="p-4 border-b border-stone-100 bg-gradient-to-r from-wine-50 to-stone-50">
+        <div className="fixed bottom-24 right-6 z-50 w-[400px] max-w-[calc(100vw-48px)] bg-black/95 rounded-2xl shadow-[0_0_50px_rgba(212,165,10,0.2)] border border-gold-800/50 overflow-hidden backdrop-blur-sm">
+          <div className="p-4 border-b border-gold-800/30 bg-gradient-to-r from-gold-900/20 to-transparent">
             <div className="flex items-center justify-between">
-              <div>
-                <h3 className="font-serif font-bold text-wine-700">Aionysus</h3>
-                <p className="text-xs text-stone-500 italic">Your AI Sommelier</p>
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-gold-500/50 shadow-[0_0_10px_rgba(212,165,10,0.4)]">
+                  <img
+                    src="/aionysus.jpg"
+                    alt="Aionysus"
+                    className="w-full h-full object-cover object-[center_15%]"
+                  />
+                </div>
+                <div>
+                  <h3 className="font-serif font-bold bg-gradient-to-r from-gold-400 to-gold-600 bg-clip-text text-transparent">Aionysus</h3>
+                  <p className="text-xs text-gold-500/60 italic">Goddess of Wine</p>
+                </div>
               </div>
               <button
                 onClick={() => setIsOpen(false)}
-                className="p-1 hover:bg-stone-100 rounded-full transition-colors"
+                className="p-1 hover:bg-gold-500/10 rounded-full transition-colors"
                 aria-label="Close"
               >
-                <svg className="w-5 h-5 text-stone-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-gold-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>

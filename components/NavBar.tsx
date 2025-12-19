@@ -43,13 +43,13 @@ export function NavBar() {
   }, [])
 
   return (
-    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-stone-100">
+    <header className="sticky top-0 z-50 bg-black/95 backdrop-blur-sm border-b border-gold-800/30">
       <div className="max-w-6xl mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-3">
-            {/* Dionysus portrait icon */}
-            <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-wine-200 shadow-sm">
+          <Link href="/" className="flex items-center gap-3 group">
+            {/* Golden goddess portrait icon */}
+            <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-gold-500/50 shadow-[0_0_15px_rgba(212,165,10,0.3)] group-hover:shadow-[0_0_25px_rgba(212,165,10,0.5)] transition-shadow">
               <img
                 src="/aionysus.jpg"
                 alt="Aionysus"
@@ -57,10 +57,10 @@ export function NavBar() {
               />
             </div>
             <div className="flex flex-col">
-              <span className="font-serif font-bold text-2xl text-wine-700">
+              <span className="font-serif font-bold text-2xl bg-gradient-to-r from-gold-400 to-gold-600 bg-clip-text text-transparent">
                 Aionysus
               </span>
-              <span className="text-[10px] text-wine-500 italic -mt-1 hidden sm:block">
+              <span className="text-[10px] text-gold-500/70 italic -mt-1 hidden sm:block">
                 Where there is no wine, there is no love
               </span>
             </div>
@@ -70,7 +70,7 @@ export function NavBar() {
           <nav className="hidden md:flex items-center gap-6">
             <Link
               href="/wines"
-              className="text-stone-600 hover:text-wine-600 transition-colors font-medium"
+              className="text-stone-300 hover:text-gold-400 transition-colors font-medium"
             >
               Wines
             </Link>
@@ -81,14 +81,14 @@ export function NavBar() {
             {/* Cart Icon */}
             <Link
               href="/cart"
-              className="relative p-2 hover:bg-stone-50 rounded-full transition-colors"
+              className="relative p-2 hover:bg-gold-500/10 rounded-full transition-colors"
               aria-label="Shopping cart"
             >
-              <svg className="w-6 h-6 text-stone-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6 text-gold-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
               </svg>
               {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-wine-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 bg-gold-500 text-black text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center shadow-[0_0_10px_rgba(212,165,10,0.5)]">
                   {cartCount > 99 ? '99+' : cartCount}
                 </span>
               )}
@@ -108,10 +108,10 @@ export function NavBar() {
                       alt={user.displayName || 'User'}
                       width="36"
                       height="36"
-                      className="w-9 h-9 rounded-full object-cover border border-wine-200"
+                      className="w-9 h-9 rounded-full object-cover border-2 border-gold-500/50"
                     />
                   ) : (
-                    <div className="w-9 h-9 rounded-full bg-wine-600 flex items-center justify-center text-white text-sm font-bold border border-wine-200">
+                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-gold-500 to-gold-700 flex items-center justify-center text-black text-sm font-bold">
                       {user.displayName?.[0] || user.primaryEmail?.[0] || 'U'}
                     </div>
                   )}
@@ -124,17 +124,17 @@ export function NavBar() {
                       className="fixed inset-0 z-40"
                       onClick={() => setShowMenu(false)}
                     />
-                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-stone-200 py-1 z-50">
-                      <div className="px-4 py-2 border-b border-stone-100">
-                        <p className="text-sm font-medium text-stone-900">{user.displayName || 'User'}</p>
-                        <p className="text-xs text-stone-500 truncate">{user.primaryEmail}</p>
+                    <div className="absolute right-0 mt-2 w-48 bg-black/95 rounded-lg shadow-lg border border-gold-800/50 py-1 z-50">
+                      <div className="px-4 py-2 border-b border-gold-800/30">
+                        <p className="text-sm font-medium text-white">{user.displayName || 'User'}</p>
+                        <p className="text-xs text-stone-400 truncate">{user.primaryEmail}</p>
                       </div>
                       <button
                         onClick={() => {
                           user.signOut()
                           setShowMenu(false)
                         }}
-                        className="w-full text-left px-4 py-2 text-sm text-stone-700 hover:bg-stone-50 transition-colors"
+                        className="w-full text-left px-4 py-2 text-sm text-stone-300 hover:bg-gold-500/10 hover:text-gold-400 transition-colors"
                       >
                         Sign Out
                       </button>
@@ -145,7 +145,7 @@ export function NavBar() {
             ) : (
               <Link
                 href="/handler/sign-up"
-                className="bg-wine-600 text-white font-medium px-4 py-2 rounded-full hover:bg-wine-700 transition-colors text-sm"
+                className="bg-gradient-to-r from-gold-500 to-gold-600 text-black font-medium px-4 py-2 rounded-full hover:from-gold-400 hover:to-gold-500 transition-all text-sm shadow-[0_0_15px_rgba(212,165,10,0.3)] hover:shadow-[0_0_20px_rgba(212,165,10,0.5)]"
               >
                 Sign in
               </Link>
