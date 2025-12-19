@@ -435,95 +435,103 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
 
   return (
     <div className="flex flex-col items-center">
-      {/* Title with consistent serif font */}
-      <div className="mb-8 text-center">
-        <h1 className="text-5xl md:text-6xl lg:text-7xl font-serif font-bold text-gold-600 tracking-tight mb-2">
-          Aionysus
-        </h1>
-        <p className="text-lg md:text-xl text-gold-500/80 font-light italic">
-          Goddess of Wine
-        </p>
-      </div>
-
-      {/* Aionysus Image with Play Button Centered Inside */}
+      {/* Large Goddess Image - THE Main Tap Target */}
       <div className="relative mb-6">
-        {/* Pulsating glow - only when NOT connected */}
+        {/* Golden divine glow - pulsating when idle */}
         {!isConnected && !isConnecting && (
           <>
             <div
-              className="absolute inset-0 rounded-full animate-[pulse-glow_2s_ease-in-out_infinite]"
+              className="absolute inset-0 rounded-full animate-[divine-pulse_3s_ease-in-out_infinite]"
               style={{
-                background: 'radial-gradient(circle, rgba(127,29,29,0.6) 0%, rgba(127,29,29,0) 70%)',
-                transform: 'scale(1.15)',
-                filter: 'blur(8px)',
+                background: 'radial-gradient(circle, rgba(212,165,10,0.5) 0%, rgba(212,165,10,0) 70%)',
+                transform: 'scale(1.2)',
+                filter: 'blur(15px)',
               }}
             />
             <div
-              className="absolute inset-0 rounded-full animate-[ping_2s_ease-in-out_infinite]"
+              className="absolute inset-0 rounded-full animate-[ping_3s_ease-in-out_infinite]"
               style={{
-                border: '3px solid rgba(127,29,29,0.5)',
-                transform: 'scale(1.05)',
+                border: '2px solid rgba(212,165,10,0.4)',
+                transform: 'scale(1.08)',
               }}
             />
           </>
         )}
 
-        {/* Rotating shine border - when connected */}
+        {/* Active golden aura - when connected */}
         {isConnected && (
           <div
-            className="absolute inset-0 rounded-full animate-[rotate-shine_3s_linear_infinite]"
+            className="absolute inset-0 rounded-full animate-[rotate-shine_4s_linear_infinite]"
             style={{
-              background: 'conic-gradient(from 0deg, transparent 0deg, rgba(127,29,29,0.8) 60deg, rgba(127,29,29,1) 120deg, rgba(127,29,29,0.8) 180deg, transparent 240deg, transparent 360deg)',
-              transform: 'scale(1.08)',
-              filter: 'blur(3px)',
+              background: 'conic-gradient(from 0deg, transparent 0deg, rgba(212,165,10,0.6) 60deg, rgba(245,197,24,0.9) 120deg, rgba(212,165,10,0.6) 180deg, transparent 240deg, transparent 360deg)',
+              transform: 'scale(1.12)',
+              filter: 'blur(4px)',
             }}
           />
         )}
 
-        {/* Clickable container with image and centered play button */}
+        {/* The Goddess - clickable face, no overlay button */}
         <button
           onClick={isConnected ? handleDisconnect : handleConnect}
           disabled={isConnecting}
-          className="relative z-10 group"
-          aria-label={isConnected ? "Stop conversation with Aionysus" : "Start conversation with Aionysus"}
+          className="relative z-10 group focus:outline-none"
+          aria-label={isConnected ? "Stop conversation with Aionysus" : "Tap to speak with Aionysus"}
         >
           <img
-            src="/aionysus.jpg"
-            alt="Aionysus"
-            className={`w-44 h-44 md:w-56 md:h-56 rounded-full object-cover border-4 cursor-pointer ${
+            src="/goddess.png"
+            alt="Aionysus - Goddess of Wine"
+            onError={(e) => { e.currentTarget.src = '/aionysus.jpg'; e.currentTarget.className = 'w-56 h-56 md:w-72 md:h-72 lg:w-80 lg:h-80 rounded-full object-cover object-[center_15%] border-4 cursor-pointer border-gold-400 shadow-[0_0_40px_rgba(212,165,10,0.6)] group-hover:shadow-[0_0_60px_rgba(212,165,10,0.9)] transition-all duration-300'; }}
+            className={`w-56 h-56 md:w-72 md:h-72 lg:w-80 lg:h-80 rounded-full object-cover border-4 cursor-pointer ${
               isConnected
-                ? 'border-gold-500 shadow-[0_0_25px_rgba(212,165,10,0.7)]'
+                ? 'border-gold-400 shadow-[0_0_50px_rgba(212,165,10,0.8)] scale-105'
                 : isConnecting
-                ? 'border-gold-400 opacity-70 cursor-wait'
-                : 'border-gold-500 shadow-[0_0_20px_rgba(212,165,10,0.5)] group-hover:shadow-[0_0_40px_rgba(212,165,10,0.8)]'
+                ? 'border-gold-300 opacity-80 cursor-wait'
+                : 'border-gold-400 shadow-[0_0_40px_rgba(212,165,10,0.6)] group-hover:shadow-[0_0_60px_rgba(212,165,10,0.9)] group-hover:scale-[1.02]'
             } transition-all duration-300`}
           />
-          {/* Centered Play/Stop Button Overlay */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div
-              className={`w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center transition-all duration-300 ${
-                isConnected
-                  ? 'bg-gold-600/90 group-hover:bg-gold-700/95'
-                  : isConnecting
-                  ? 'bg-gold-400/80'
-                  : 'bg-gold-600/85 group-hover:bg-gold-600/95 group-hover:scale-110'
-              } shadow-lg backdrop-blur-sm`}
-            >
-              {isConnecting ? (
-                <div className="w-8 h-8 border-3 border-white border-t-transparent rounded-full animate-spin" />
-              ) : isConnected ? (
-                <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
-                  <rect x="6" y="6" width="12" height="12" rx="2" />
-                </svg>
-              ) : (
-                <svg className="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M8 5v14l11-7z" />
-                </svg>
-              )}
+
+          {/* Subtle connecting spinner overlay */}
+          {isConnecting && (
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-12 h-12 border-3 border-gold-400 border-t-transparent rounded-full animate-spin" />
             </div>
-          </div>
+          )}
         </button>
       </div>
+
+      {/* Secondary Play/Stop Button - below the image */}
+      <button
+        onClick={isConnected ? handleDisconnect : handleConnect}
+        disabled={isConnecting}
+        className={`mb-4 px-6 py-2 rounded-full font-medium text-sm transition-all duration-300 flex items-center gap-2 ${
+          isConnected
+            ? 'bg-gold-600 text-black hover:bg-gold-500'
+            : isConnecting
+            ? 'bg-gold-400/50 text-gold-800 cursor-wait'
+            : 'bg-gold-500 text-black hover:bg-gold-400 hover:shadow-[0_0_20px_rgba(212,165,10,0.5)]'
+        }`}
+      >
+        {isConnecting ? (
+          <>
+            <div className="w-4 h-4 border-2 border-gold-800 border-t-transparent rounded-full animate-spin" />
+            Connecting...
+          </>
+        ) : isConnected ? (
+          <>
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+              <rect x="6" y="6" width="12" height="12" rx="2" />
+            </svg>
+            End Conversation
+          </>
+        ) : (
+          <>
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M8 5v14l11-7z" />
+            </svg>
+            Speak with the Goddess
+          </>
+        )}
+      </button>
 
       {/* Waveform Animation - Centered Below */}
       <div className="flex items-center justify-center gap-[2px] h-12 w-64 mb-4">
