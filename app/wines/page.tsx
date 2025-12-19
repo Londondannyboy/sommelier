@@ -121,13 +121,14 @@ export default function WinesPage() {
                 </div>
                 <div className="p-4">
                   <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium mb-2 ${
-                    (wine.color || wine.wine_type || '').toLowerCase() === 'red' ? 'bg-red-900/50 text-red-300 border border-red-700/30' :
-                    (wine.color || wine.wine_type || '').toLowerCase() === 'white' ? 'bg-yellow-900/50 text-yellow-300 border border-yellow-700/30' :
-                    (wine.color || wine.wine_type || '').toLowerCase() === 'rose' ? 'bg-pink-900/50 text-pink-300 border border-pink-700/30' :
-                    (wine.color || wine.wine_type || '').toLowerCase() === 'sparkling' ? 'bg-amber-900/50 text-amber-300 border border-amber-700/30' :
+                    (wine.wine_type || '').toLowerCase() === 'red' ? 'bg-red-900/50 text-red-300 border border-red-700/30' :
+                    (wine.wine_type || '').toLowerCase() === 'white' ? 'bg-yellow-900/50 text-yellow-300 border border-yellow-700/30' :
+                    (wine.wine_type || '').toLowerCase() === 'rose' ? 'bg-pink-900/50 text-pink-300 border border-pink-700/30' :
+                    (wine.wine_type || '').toLowerCase() === 'sparkling' ? 'bg-amber-900/50 text-amber-300 border border-amber-700/30' :
+                    (wine.wine_type || '').toLowerCase() === 'dessert' ? 'bg-orange-900/50 text-orange-300 border border-orange-700/30' :
                     'bg-purple-900/50 text-purple-300 border border-purple-700/30'
                   }`}>
-                    {wine.color || wine.wine_type || 'Wine'}
+                    {(wine.wine_type || 'Wine').charAt(0).toUpperCase() + (wine.wine_type || 'Wine').slice(1)}
                   </span>
                   <h3 className="font-semibold text-gold-100 mb-1 line-clamp-2 group-hover:text-gold-300 transition-colors">{wine.name}</h3>
                   <p className="text-sm text-gold-400/60 mb-2">{wine.region}</p>
