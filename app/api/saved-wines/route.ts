@@ -4,6 +4,27 @@ import { stackServerApp } from '@/stack/server'
 
 const sql = neon(process.env.DATABASE_URL!)
 
+// Helper to get or create user in public.users from neon_auth
+async function getOrCreateUser(authUser: { id: string; primaryEmail?: string | null; displayName?: string | null }) {
+  // Check if user exists
+  let userResult = await sql`
+    SELECT id FROM users WHERE neon_auth_id = ${authUser.id} LIMIT 1
+  `
+
+  if (userResult.length === 0) {
+    // Create user from neon_auth data
+    const firstName = authUser.displayName?.split(' ')[0] || null
+    userResult = await sql`
+      INSERT INTO users (neon_auth_id, email, first_name)
+      VALUES (${authUser.id}, ${authUser.primaryEmail || null}, ${firstName})
+      ON CONFLICT (neon_auth_id) DO UPDATE SET email = EXCLUDED.email
+      RETURNING id
+    `
+  }
+
+  return userResult[0]?.id
+}
+
 // GET - List user's saved wines
 export async function GET() {
   try {
@@ -12,16 +33,12 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Get user's internal ID
-    const userResult = await sql`
-      SELECT id FROM users WHERE neon_auth_id = ${user.id} LIMIT 1
-    `
+    // Get or create user's internal ID
+    const userId = await getOrCreateUser(user)
 
-    if (userResult.length === 0) {
+    if (!userId) {
       return NextResponse.json({ savedWines: [], savedWineIds: [] })
     }
-
-    const userId = userResult[0].id
 
     // Get saved wines with wine details
     const savedWines = await sql`
@@ -70,16 +87,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Wine ID required' }, { status: 400 })
     }
 
-    // Get user's internal ID
-    const userResult = await sql`
-      SELECT id FROM users WHERE neon_auth_id = ${user.id} LIMIT 1
-    `
+    // Get or create user's internal ID
+    const userId = await getOrCreateUser(user)
 
-    if (userResult.length === 0) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
+    if (!userId) {
+      return NextResponse.json({ error: 'Failed to create user' }, { status: 500 })
     }
-
-    const userId = userResult[0].id
 
     // Insert saved wine (ignore if already exists)
     await sql`
@@ -113,16 +126,12 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'Wine ID required' }, { status: 400 })
     }
 
-    // Get user's internal ID
-    const userResult = await sql`
-      SELECT id FROM users WHERE neon_auth_id = ${user.id} LIMIT 1
-    `
+    // Get or create user's internal ID
+    const userId = await getOrCreateUser(user)
 
-    if (userResult.length === 0) {
+    if (!userId) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
-
-    const userId = userResult[0].id
 
     // Delete saved wine
     await sql`
