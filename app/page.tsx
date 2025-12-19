@@ -143,21 +143,16 @@ export default function HomePage() {
 
       {/* Footer */}
       <footer className="bg-gradient-to-b from-white to-stone-50 border-t border-stone-100 py-12">
-        <div className="max-w-4xl mx-auto px-4">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-8">
-            <span className="font-serif font-bold text-xl text-wine-700">Aionysus</span>
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <span className="font-serif font-bold text-xl text-wine-700">Aionysus</span>
+          <p className="text-stone-500 italic text-sm mt-2 mb-6">Where there is no wine, there is no love</p>
 
-            <nav className="flex gap-6 text-sm text-stone-600">
-              <a href="#how-sommelier-ai-works" className="hover:text-wine-600 transition-colors">How It Works</a>
-              <a href="mailto:hello@aionysus.wine" className="hover:text-wine-600 transition-colors">Contact</a>
-            </nav>
-          </div>
-
-          <div className="border-t border-stone-200 pt-8">
-            <p className="text-center text-stone-500 text-xs">
-              © {new Date().getFullYear()} Aionysus • BETA • 40 Bordeaux<br />
-              <span className="text-stone-400">Drink responsibly.</span>
+          <div className="border-t border-stone-200 pt-6">
+            <p className="text-stone-400 text-xs">
+              © {new Date().getFullYear()} Aionysus • BETA<br />
+              <a href="mailto:hello@aionysus.wine" className="hover:text-wine-600 transition-colors">hello@aionysus.wine</a>
             </p>
+            <p className="text-stone-400 text-xs mt-4">Drink responsibly.</p>
           </div>
         </div>
       </footer>

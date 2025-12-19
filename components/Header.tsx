@@ -22,10 +22,6 @@ export function Header() {
             </span>
           </Link>
 
-          {/* Nav */}
-          <nav className="hidden md:flex items-center gap-8">
-            <a href="#how-sommelier-ai-works" className="text-stone-600 hover:text-stone-900 transition-colors text-sm">How it works</a>
-          </nav>
 
           {/* Auth Section */}
           <div className="flex items-center gap-3">
