@@ -4,6 +4,14 @@ import { useState, useCallback, useEffect } from 'react'
 import { VoiceProvider, useVoice } from '@humeai/voice-react'
 import { useUser } from '@stackframe/stack'
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
+
+// Dynamically import animation components to avoid SSR issues
+const SplineGoddess = dynamic(() => import('./SplineGoddess'), { ssr: false })
+const LottieGoddess = dynamic(() => import('./LottieGoddess'), { ssr: false })
+
+// Animation mode type
+type AnimationMode = 'image' | 'spline' | 'lottie'
 // NOTE: System prompt should be configured in Hume dashboard for config ID 606a18be-4c8e-4877-8fb4-52665831b33d
 
 interface Wine {
@@ -173,11 +181,10 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
   const { connect, disconnect, status, messages, sendToolMessage, isPlaying } = useVoice()
   const [manualConnected, setManualConnected] = useState(false)
   const [waveHeights, setWaveHeights] = useState<number[]>([])
+  const [animationMode, setAnimationMode] = useState<AnimationMode>('image')
   const [wines, setWines] = useState<Wine[]>([])
-  const [detectedWines, setDetectedWines] = useState<Map<number, Wine[]>>(new Map())
   const [discussedWines, setDiscussedWines] = useState<Wine[]>([])
   const [localCart, setLocalCart] = useState<Array<{ id: number; name: string; winery: string; price: number; quantity: number; image_url: string }>>([])
-  const [showLastMessage, setShowLastMessage] = useState(true)
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
   const [shopifyCartId, setShopifyCartId] = useState<string | null>(null)
   const [checkoutUrl, setCheckoutUrl] = useState<string | null>(null)
@@ -260,6 +267,15 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
               body: JSON.stringify(parameters || {}),
             })
             result = await response.json()
+            // Capture wines from search results
+            if (result.wines && Array.isArray(result.wines)) {
+              const newWines = result.wines.filter((w: Wine) =>
+                !discussedWines.find(dw => dw.id === w.id)
+              )
+              if (newWines.length > 0) {
+                setDiscussedWines(prev => [...prev, ...newWines.slice(0, 3)])
+              }
+            }
             break
 
           case 'get_wine':
@@ -269,6 +285,10 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
               body: JSON.stringify(parameters || {}),
             })
             result = await response.json()
+            // Capture the wine from get_wine result
+            if (result.wine && !discussedWines.find(w => w.id === result.wine.id)) {
+              setDiscussedWines(prev => [...prev, result.wine])
+            }
             break
 
           case 'list_wines':
@@ -287,6 +307,15 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
               body: JSON.stringify(parameters || {}),
             })
             result = await response.json()
+            // Capture wines from recommendations
+            if (result.wines && Array.isArray(result.wines)) {
+              const newWines = result.wines.filter((w: Wine) =>
+                !discussedWines.find(dw => dw.id === w.id)
+              )
+              if (newWines.length > 0) {
+                setDiscussedWines(prev => [...prev, ...newWines.slice(0, 3)])
+              }
+            }
             break
 
           case 'add_to_cart':
@@ -368,47 +397,17 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
     }
   }, [messages, sendToolMessage])
 
-  // Detect wines in messages and accumulate discussed wines
+  // Clear discussed wines when session ends
   useEffect(() => {
-    if (wines.length === 0) return
-
-    const newDetected = new Map<number, Wine[]>()
-    const allDiscussed: Wine[] = [...discussedWines]
-
-    messages.forEach((msg, index) => {
-      if (msg.type === 'assistant_message' && msg.message?.content) {
-        const content = msg.message.content.toLowerCase()
-        const foundWines: Wine[] = []
-
-        wines.forEach(wine => {
-          // Check for wine name in message
-          const wineName = wine.name.toLowerCase()
-          if (content.includes(wineName) ||
-              content.includes(wine.winery?.toLowerCase() || '') ||
-              // Check for partial matches
-              wineName.split(' ').some(word => word.length > 4 && content.includes(word))) {
-            if (!foundWines.find(w => w.id === wine.id)) {
-              foundWines.push(wine)
-              // Add to discussed wines if not already there
-              if (!allDiscussed.find(w => w.id === wine.id)) {
-                allDiscussed.push(wine)
-              }
-            }
-          }
-        })
-
-        if (foundWines.length > 0) {
-          newDetected.set(index, foundWines)
-        }
-      }
-    })
-
-    setDetectedWines(newDetected)
-    // Only update if we found new wines
-    if (allDiscussed.length > discussedWines.length) {
-      setDiscussedWines(allDiscussed)
+    if (status.value === 'disconnected' && discussedWines.length > 0) {
+      // Keep wines for reference but could clear here if desired
     }
-  }, [messages, wines])
+  }, [status.value])
+
+  // Clear discussed wines handler
+  const handleClearDiscussed = useCallback(() => {
+    setDiscussedWines([])
+  }, [])
 
   useEffect(() => {
     if (status.value === 'connected') {
@@ -571,6 +570,23 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
           </>
         )}
 
+        {/* Animation Mode Toggle - Dev Tool */}
+        <div className="absolute -top-12 left-1/2 -translate-x-1/2 flex gap-1 bg-black/80 rounded-full p-1 z-20">
+          {(['image', 'spline', 'lottie'] as AnimationMode[]).map((mode) => (
+            <button
+              key={mode}
+              onClick={() => setAnimationMode(mode)}
+              className={`px-3 py-1 text-xs font-medium rounded-full transition-all ${
+                animationMode === mode
+                  ? 'bg-gold-500 text-black'
+                  : 'text-gold-400 hover:text-gold-300'
+              }`}
+            >
+              {mode.charAt(0).toUpperCase() + mode.slice(1)}
+            </button>
+          ))}
+        </div>
+
         {/* The Goddess - clickable with gold background inside circle */}
         <button
           onClick={isConnected ? handleDisconnect : handleConnect}
@@ -588,46 +604,71 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
               border: '3px solid rgba(212,165,10,0.8)',
             }}
           >
-            {/* Icon scaled up to fill the circle (square corners get clipped) */}
-            <div className={`absolute inset-[-15%] w-[130%] h-[130%] flex items-center justify-center ${
-              isPlaying ? 'animate-[speaking-breathe_2s_ease-in-out_infinite]' : ''
-            }`}>
-              <img
-                src="/aionysus-classic-icon.png"
-                alt="Aionysus - Goddess of Wine"
-                className={`w-full h-full object-cover cursor-pointer ${
-                  isConnected
-                    ? isPlaying
-                      ? 'scale-105 brightness-110'
-                      : 'scale-105'
-                    : isConnecting
-                    ? 'opacity-80 cursor-wait'
-                    : 'group-hover:scale-[1.02]'
-                } transition-all duration-300`}
-              />
-            </div>
+            {/* MODE: Original Image */}
+            {animationMode === 'image' && (
+              <>
+                {/* Icon scaled up to fill the circle (square corners get clipped) */}
+                <div className={`absolute inset-[-15%] w-[130%] h-[130%] flex items-center justify-center ${
+                  isPlaying ? 'animate-[speaking-breathe_2s_ease-in-out_infinite]' : ''
+                }`}>
+                  <img
+                    src="/aionysus-classic-icon.png"
+                    alt="Aionysus - Goddess of Wine"
+                    className={`w-full h-full object-cover cursor-pointer ${
+                      isConnected
+                        ? isPlaying
+                          ? 'scale-105 brightness-110'
+                          : 'scale-105'
+                        : isConnecting
+                        ? 'opacity-80 cursor-wait'
+                        : 'group-hover:scale-[1.02]'
+                    } transition-all duration-300`}
+                  />
+                </div>
 
-            {/* Speaking glow effect */}
-            {isPlaying && (
-              <div className="absolute inset-0 rounded-full animate-[speaking-glow_1.5s_ease-in-out_infinite] pointer-events-none" />
+                {/* Speaking glow effect */}
+                {isPlaying && (
+                  <div className="absolute inset-0 rounded-full animate-[speaking-glow_1.5s_ease-in-out_infinite] pointer-events-none" />
+                )}
+
+                {/* Expanding rings when speaking */}
+                {isPlaying && (
+                  <>
+                    <div
+                      className="absolute inset-0 rounded-full border-2 border-gold-400/60 pointer-events-none"
+                      style={{ animation: 'speaking-ring 2s ease-out infinite' }}
+                    />
+                    <div
+                      className="absolute inset-0 rounded-full border-2 border-gold-400/40 pointer-events-none"
+                      style={{ animation: 'speaking-ring 2s ease-out infinite 0.5s' }}
+                    />
+                    <div
+                      className="absolute inset-0 rounded-full border border-gold-400/20 pointer-events-none"
+                      style={{ animation: 'speaking-ring 2s ease-out infinite 1s' }}
+                    />
+                  </>
+                )}
+              </>
             )}
 
-            {/* Expanding rings when speaking */}
-            {isPlaying && (
-              <>
-                <div
-                  className="absolute inset-0 rounded-full border-2 border-gold-400/60 pointer-events-none"
-                  style={{ animation: 'speaking-ring 2s ease-out infinite' }}
+            {/* MODE: Spline 3D */}
+            {animationMode === 'spline' && (
+              <div className="absolute inset-0">
+                <SplineGoddess
+                  isPlaying={isPlaying}
+                  sceneUrl="https://prod.spline.design/6Wq1Q7YGyM-iab9i/scene.splinecode"
                 />
-                <div
-                  className="absolute inset-0 rounded-full border-2 border-gold-400/40 pointer-events-none"
-                  style={{ animation: 'speaking-ring 2s ease-out infinite 0.5s' }}
+              </div>
+            )}
+
+            {/* MODE: Lottie Animation */}
+            {animationMode === 'lottie' && (
+              <div className="absolute inset-0">
+                <LottieGoddess
+                  isPlaying={isPlaying}
+                  animationPath="/animations/goddess.json"
                 />
-                <div
-                  className="absolute inset-0 rounded-full border border-gold-400/20 pointer-events-none"
-                  style={{ animation: 'speaking-ring 2s ease-out infinite 1s' }}
-                />
-              </>
+              </div>
             )}
           </div>
 
@@ -694,13 +735,8 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
         ))}
       </div>
 
-      {/* Wine Proverb */}
-      <p className="text-gold-500 text-sm italic mb-2">
-        "Where there is no wine, there is no love"
-      </p>
-
-      {/* Status Text - LARGER */}
-      <p className={`text-2xl md:text-3xl font-bold mb-6 text-center tracking-wide transition-all ${
+      {/* Status Text - Compact when connected */}
+      <p className={`text-lg md:text-xl font-medium mb-4 text-center transition-all ${
         isPlaying ? 'text-gold-300' : 'text-gold-500'
       }`}>
         {isConnecting
@@ -714,25 +750,39 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
           : "Tap to commune with Aionysus"}
       </p>
 
-      {/* Version & Info Panel - Updated SKU count, no email */}
-      <div className="text-center mb-8 space-y-3">
-        <div className="inline-flex items-center gap-2 px-4 py-2 bg-gold-900/20 rounded-full border border-gold-700/30">
-          <span className="text-gold-400 text-sm font-semibold">BETA</span>
-          <span className="text-gold-600">•</span>
-          <span className="text-gold-300 text-sm">1,300+ Wines</span>
-          <span className="text-gold-600">•</span>
-          <span className="text-gold-300 text-sm">All Types</span>
+      {/* SHOPPING DASHBOARD - Appears when connected, ABOVE the info panel */}
+      {isConnected && (
+        <div className="w-full max-w-2xl mb-6 space-y-4">
+          {/* Latest Wine Recommended */}
+          {discussedWines.length > 0 && (
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <p className="text-gold-400 text-xs font-medium text-center mb-3">The Goddess Recommends</p>
+              <WineCard wine={discussedWines[discussedWines.length - 1]} onAddToCart={handleAddToCart} />
+            </div>
+          )}
         </div>
-        <p className="text-gold-400/60 text-sm max-w-md">
-          Red, White, Rosé, Sparkling & Dessert wines from Bordeaux, Champagne, and fine wine regions worldwide.
-        </p>
-      </div>
+      )}
 
-      {/* Latest Wine Mentioned - Show current recommendation */}
-      {isConnected && discussedWines.length > 0 && (
-        <div className="w-full max-w-md mb-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-          <p className="text-gold-400 text-xs font-medium text-center mb-3">The Goddess Recommends</p>
-          <WineCard wine={discussedWines[discussedWines.length - 1]} onAddToCart={handleAddToCart} />
+      {/* Wine Proverb - Only show when not connected */}
+      {!isConnected && (
+        <p className="text-gold-500 text-sm italic mb-4">
+          "Where there is no wine, there is no love"
+        </p>
+      )}
+
+      {/* Version & Info Panel - Compact when connected */}
+      {!isConnected && (
+        <div className="text-center mb-8 space-y-3">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-gold-900/20 rounded-full border border-gold-700/30">
+            <span className="text-gold-400 text-sm font-semibold">BETA</span>
+            <span className="text-gold-600">•</span>
+            <span className="text-gold-300 text-sm">3,800+ Wines</span>
+            <span className="text-gold-600">•</span>
+            <span className="text-gold-300 text-sm">All Types</span>
+          </div>
+          <p className="text-gold-400/60 text-sm max-w-md">
+            Red, White, Rosé, Sparkling & Dessert wines from Bordeaux, Champagne, and fine wine regions worldwide.
+          </p>
         </div>
       )}
 
@@ -796,7 +846,18 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
       {/* Wines Mentioned (smaller, below cart) */}
       {discussedWines.length > 1 && (
         <div className="w-full max-w-2xl mb-8">
-          <p className="text-gold-500/60 text-xs font-medium mb-3">Also Discussed</p>
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-gold-500/60 text-xs font-medium">Also Discussed</p>
+            <button
+              onClick={handleClearDiscussed}
+              className="text-gold-500/40 hover:text-gold-400 text-xs flex items-center gap-1 transition-colors"
+            >
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+              Clear
+            </button>
+          </div>
           <div className="overflow-x-auto scrollbar-hide">
             <div className="flex gap-3 pb-2">
               {discussedWines.slice(0, -1).map((wine) => (
