@@ -154,8 +154,8 @@ export default function CartPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#faf9f7] flex items-center justify-center">
-        <div className="w-10 h-10 border-2 border-stone-200 border-t-gold-500 rounded-full animate-spin" />
+      <div className="min-h-screen bg-gradient-to-b from-black via-stone-950 to-black flex items-center justify-center">
+        <div className="w-12 h-12 border-2 border-gold-700/30 border-t-gold-500 rounded-full animate-spin" />
       </div>
     )
   }
@@ -163,12 +163,20 @@ export default function CartPage() {
   const cartData = getCartData()
 
   return (
-    <div className="min-h-screen bg-[#faf9f7]">
-      <main className="max-w-4xl mx-auto px-4 py-8 pt-24">
+    <div className="min-h-screen bg-gradient-to-b from-black via-stone-950 to-black">
+      {/* Decorative background */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(212,165,10,0.08)_0%,transparent_50%)]" />
+      </div>
+
+      <main className="relative z-10 max-w-4xl mx-auto px-4 py-8 pt-28">
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-3xl font-serif font-bold text-stone-900">Your Cart</h1>
+          <div>
+            <span className="text-gold-500/60 text-xs tracking-[0.2em] uppercase">✦ Your Selection ✦</span>
+            <h1 className="text-3xl font-serif font-bold bg-gradient-to-r from-gold-300 via-gold-400 to-gold-300 bg-clip-text text-transparent">Your Cart</h1>
+          </div>
           {isShopifyEnabled && (
-            <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
+            <span className="text-xs bg-gold-900/50 text-gold-300 px-3 py-1 rounded-full border border-gold-700/30">
               Shopify Checkout
             </span>
           )}
@@ -177,18 +185,18 @@ export default function CartPage() {
         {cartData.isEmpty ? (
           <div className="text-center py-16">
             <div className="text-6xl mb-4">🍷</div>
-            <h2 className="text-xl font-semibold text-stone-900 mb-2">Your cart is empty</h2>
-            <p className="text-stone-500 mb-6">Ask Aionysus for wine recommendations or browse our collection</p>
+            <h2 className="text-xl font-semibold text-gold-200 mb-2">Your cart is empty</h2>
+            <p className="text-gold-400/60 mb-6">Ask Aionysus for wine recommendations or browse our collection</p>
             <div className="flex justify-center gap-4">
               <Link
                 href="/"
-                className="px-6 py-3 bg-gold-600 text-white rounded-lg font-semibold hover:bg-gold-700 transition-colors"
+                className="px-6 py-3 bg-gradient-to-r from-gold-500 to-gold-600 text-black rounded-lg font-semibold hover:from-gold-400 hover:to-gold-500 transition-all shadow-[0_0_20px_rgba(212,165,10,0.3)]"
               >
                 Talk to Aionysus
               </Link>
               <Link
                 href="/wines"
-                className="px-6 py-3 bg-stone-900 text-white rounded-lg font-semibold hover:bg-stone-800 transition-colors"
+                className="px-6 py-3 bg-stone-800 text-gold-200 rounded-lg font-semibold hover:bg-stone-700 border border-gold-700/30 transition-colors"
               >
                 Browse Wines
               </Link>
@@ -203,7 +211,7 @@ export default function CartPage() {
                 shopifyCart.lines.edges.map(({ node: item }) => (
                   <div
                     key={item.id}
-                    className="bg-white rounded-xl border border-stone-100 p-4 flex gap-4"
+                    className="bg-gradient-to-b from-stone-900/80 to-stone-950/90 rounded-xl border border-gold-700/20 p-4 flex gap-4"
                   >
                     <div className="w-20 h-28 relative flex-shrink-0">
                       <Image
@@ -215,30 +223,30 @@ export default function CartPage() {
                     </div>
 
                     <div className="flex-1">
-                      <Link href={`/wines`} className="font-semibold text-stone-900 hover:text-gold-500">
+                      <Link href={`/wines`} className="font-semibold text-gold-100 hover:text-gold-300">
                         {item.merchandise.product.title}
                       </Link>
-                      <p className="text-sm text-stone-500">{item.merchandise.title}</p>
-                      <p className="font-bold text-gold-500 mt-1">
+                      <p className="text-sm text-gold-400/60">{item.merchandise.title}</p>
+                      <p className="font-bold text-gold-400 mt-1">
                         {formatPrice(item.merchandise.price.amount, item.merchandise.price.currencyCode)}
                       </p>
 
                       <div className="flex items-center justify-between mt-3">
-                        <div className="flex items-center border border-stone-200 rounded-lg">
+                        <div className="flex items-center border border-gold-700/30 rounded-lg bg-stone-900/50">
                           <button
                             onClick={() => updateShopifyQuantity(item.id, item.quantity - 1)}
                             disabled={updating === item.id}
-                            className="px-3 py-1 text-stone-600 hover:bg-stone-50 transition-colors disabled:opacity-50"
+                            className="px-3 py-1 text-gold-400 hover:bg-gold-900/30 transition-colors disabled:opacity-50"
                           >
                             -
                           </button>
-                          <span className="px-3 py-1 font-medium">
+                          <span className="px-3 py-1 font-medium text-gold-200">
                             {updating === item.id ? '...' : item.quantity}
                           </span>
                           <button
                             onClick={() => updateShopifyQuantity(item.id, item.quantity + 1)}
                             disabled={updating === item.id}
-                            className="px-3 py-1 text-stone-600 hover:bg-stone-50 transition-colors disabled:opacity-50"
+                            className="px-3 py-1 text-gold-400 hover:bg-gold-900/30 transition-colors disabled:opacity-50"
                           >
                             +
                           </button>
@@ -247,7 +255,7 @@ export default function CartPage() {
                         <button
                           onClick={() => removeShopifyItem(item.id)}
                           disabled={updating === item.id}
-                          className="text-stone-400 hover:text-red-500 transition-colors disabled:opacity-50"
+                          className="text-gold-600/50 hover:text-red-400 transition-colors disabled:opacity-50"
                         >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -262,7 +270,7 @@ export default function CartPage() {
                 localCart.map((item) => (
                   <div
                     key={item.id}
-                    className="bg-white rounded-xl border border-stone-100 p-4 flex gap-4"
+                    className="bg-gradient-to-b from-stone-900/80 to-stone-950/90 rounded-xl border border-gold-700/20 p-4 flex gap-4"
                   >
                     <div className="w-20 h-28 relative flex-shrink-0">
                       <Image
@@ -274,24 +282,24 @@ export default function CartPage() {
                     </div>
 
                     <div className="flex-1">
-                      <Link href={`/wines/${item.id}`} className="font-semibold text-stone-900 hover:text-gold-500">
+                      <Link href={`/wines/${item.id}`} className="font-semibold text-gold-100 hover:text-gold-300">
                         {item.name}
                       </Link>
-                      <p className="text-sm text-stone-500">{item.winery}</p>
-                      <p className="font-bold text-gold-500 mt-1">£{item.price.toFixed(2)}</p>
+                      <p className="text-sm text-gold-400/60">{item.winery}</p>
+                      <p className="font-bold text-gold-400 mt-1">£{item.price.toFixed(2)}</p>
 
                       <div className="flex items-center justify-between mt-3">
-                        <div className="flex items-center border border-stone-200 rounded-lg">
+                        <div className="flex items-center border border-gold-700/30 rounded-lg bg-stone-900/50">
                           <button
                             onClick={() => updateLocalQuantity(item.id, item.quantity - 1)}
-                            className="px-3 py-1 text-stone-600 hover:bg-stone-50 transition-colors"
+                            className="px-3 py-1 text-gold-400 hover:bg-gold-900/30 transition-colors"
                           >
                             -
                           </button>
-                          <span className="px-3 py-1 font-medium">{item.quantity}</span>
+                          <span className="px-3 py-1 font-medium text-gold-200">{item.quantity}</span>
                           <button
                             onClick={() => updateLocalQuantity(item.id, item.quantity + 1)}
-                            className="px-3 py-1 text-stone-600 hover:bg-stone-50 transition-colors"
+                            className="px-3 py-1 text-gold-400 hover:bg-gold-900/30 transition-colors"
                           >
                             +
                           </button>
@@ -299,7 +307,7 @@ export default function CartPage() {
 
                         <button
                           onClick={() => removeLocalItem(item.id)}
-                          className="text-stone-400 hover:text-red-500 transition-colors"
+                          className="text-gold-600/50 hover:text-red-400 transition-colors"
                         >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -313,7 +321,7 @@ export default function CartPage() {
 
               <button
                 onClick={clearCart}
-                className="text-sm text-stone-500 hover:text-red-500 transition-colors"
+                className="text-sm text-gold-500/50 hover:text-red-400 transition-colors"
               >
                 Clear cart
               </button>
@@ -321,21 +329,21 @@ export default function CartPage() {
 
             {/* Order Summary */}
             <div className="lg:col-span-1">
-              <div className="bg-white rounded-xl border border-stone-100 p-6 sticky top-24">
-                <h2 className="font-bold text-stone-900 mb-4">Order Summary</h2>
+              <div className="bg-gradient-to-b from-stone-900/90 to-stone-950 rounded-xl border border-gold-700/30 p-6 sticky top-24">
+                <h2 className="font-bold text-gold-200 mb-4">Order Summary</h2>
 
                 <div className="space-y-3 mb-6">
-                  <div className="flex justify-between text-stone-600">
+                  <div className="flex justify-between text-gold-300/70">
                     <span>Subtotal ({cartData.itemCount} items)</span>
                     <span>{cartData.subtotal}</span>
                   </div>
                   {!isShopifyEnabled && (
-                    <div className="flex justify-between text-stone-600">
+                    <div className="flex justify-between text-gold-300/70">
                       <span>Shipping</span>
                       <span>{cartData.shipping}</span>
                     </div>
                   )}
-                  <div className="border-t border-stone-100 pt-3 flex justify-between font-bold text-stone-900">
+                  <div className="border-t border-gold-700/30 pt-3 flex justify-between font-bold text-gold-200">
                     <span>Total</span>
                     <span>{cartData.total}</span>
                   </div>
@@ -346,17 +354,17 @@ export default function CartPage() {
                     href={cartData.checkoutUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block w-full py-3 bg-gold-600 text-white text-center rounded-lg font-semibold hover:bg-gold-700 transition-colors mb-3"
+                    className="block w-full py-3 bg-gradient-to-r from-gold-500 to-gold-600 text-black text-center rounded-lg font-semibold hover:from-gold-400 hover:to-gold-500 transition-all shadow-[0_0_20px_rgba(212,165,10,0.3)] mb-3"
                   >
                     Checkout
                   </a>
                 ) : (
-                  <button className="w-full py-3 bg-gold-600 text-white rounded-lg font-semibold hover:bg-gold-700 transition-colors mb-3">
+                  <button className="w-full py-3 bg-gradient-to-r from-gold-500 to-gold-600 text-black rounded-lg font-semibold hover:from-gold-400 hover:to-gold-500 transition-all shadow-[0_0_20px_rgba(212,165,10,0.3)] mb-3">
                     Checkout
                   </button>
                 )}
 
-                <p className="text-xs text-center text-stone-500">
+                <p className="text-xs text-center text-gold-500/50">
                   {isShopifyEnabled ? 'Secure checkout powered by Shopify' : 'Demo only - no real orders processed'}
                 </p>
               </div>

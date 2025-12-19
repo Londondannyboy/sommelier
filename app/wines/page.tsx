@@ -63,23 +63,32 @@ export default function WinesPage() {
       })
 
   return (
-    <div className="min-h-screen bg-[#faf9f7]">
-      <main className="max-w-6xl mx-auto px-4 py-8 pt-24">
-        <h1 className="text-3xl md:text-4xl font-serif font-bold text-stone-900 mb-2">
-          Wine Collection
-        </h1>
-        <p className="text-stone-500 mb-8">Curated wines recommended by Sommelier AI</p>
+    <div className="min-h-screen bg-gradient-to-b from-black via-stone-950 to-black">
+      {/* Decorative background */}
+      <div className="fixed inset-0 pointer-events-none z-0">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(212,165,10,0.1)_0%,transparent_50%)]" />
+      </div>
 
-        {/* Filters */}
-        <div className="flex flex-wrap gap-2 mb-8">
+      <main className="relative z-10 max-w-6xl mx-auto px-4 py-8 pt-28">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <span className="text-gold-500/60 text-sm tracking-[0.3em] uppercase">✦ The Collection ✦</span>
+          <h1 className="text-4xl md:text-5xl font-serif font-bold mt-2 bg-gradient-to-r from-gold-300 via-gold-400 to-gold-300 bg-clip-text text-transparent">
+            Wine Collection
+          </h1>
+          <p className="text-gold-200/60 mt-3">Curated wines recommended by your divine sommelier</p>
+        </div>
+
+        {/* Filters - Golden themed */}
+        <div className="flex flex-wrap justify-center gap-3 mb-10">
           {['all', 'red', 'white', 'rose', 'sparkling', 'dessert'].map((type) => (
             <button
               key={type}
               onClick={() => setFilter(type)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+              className={`px-5 py-2 rounded-full text-sm font-medium transition-all ${
                 filter === type
-                  ? 'bg-gold-600 text-white'
-                  : 'bg-white text-stone-600 border border-stone-200 hover:border-gold-300'
+                  ? 'bg-gradient-to-r from-gold-500 to-gold-600 text-black shadow-[0_0_20px_rgba(212,165,10,0.4)]'
+                  : 'bg-stone-900/50 text-gold-300/80 border border-gold-700/30 hover:border-gold-500/50 hover:text-gold-200'
               }`}
             >
               {type.charAt(0).toUpperCase() + type.slice(1)}
@@ -89,7 +98,7 @@ export default function WinesPage() {
 
         {loading ? (
           <div className="flex justify-center py-20">
-            <div className="w-10 h-10 border-2 border-stone-200 border-t-gold-500 rounded-full animate-spin" />
+            <div className="w-12 h-12 border-2 border-gold-700/30 border-t-gold-500 rounded-full animate-spin" />
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -97,33 +106,42 @@ export default function WinesPage() {
               <Link
                 key={wine.id}
                 href={`/wines/${wine.id}`}
-                className="bg-white rounded-xl border border-stone-100 overflow-hidden hover:shadow-lg transition-shadow group"
+                className="bg-gradient-to-b from-stone-900/80 to-stone-950/90 rounded-xl border border-gold-700/20 overflow-hidden hover:border-gold-500/40 hover:shadow-[0_0_30px_rgba(212,165,10,0.15)] transition-all group"
               >
-                <div className="aspect-[3/4] relative bg-stone-50">
+                <div className="aspect-[3/4] relative bg-stone-900">
                   <Image
                     src={wine.image_url || PLACEHOLDER_IMAGE}
                     alt={wine.name}
                     fill
-                    className="object-cover group-hover:scale-105 transition-transform"
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
+                  {/* Gradient overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
                 <div className="p-4">
                   <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium mb-2 ${
-                    (wine.color || wine.wine_type || '').toLowerCase() === 'red' ? 'bg-red-100 text-red-800' :
-                    (wine.color || wine.wine_type || '').toLowerCase() === 'white' ? 'bg-yellow-100 text-yellow-800' :
-                    (wine.color || wine.wine_type || '').toLowerCase() === 'rose' ? 'bg-pink-100 text-pink-800' :
-                    (wine.color || wine.wine_type || '').toLowerCase() === 'sparkling' ? 'bg-amber-100 text-amber-800' :
-                    'bg-purple-100 text-purple-800'
+                    (wine.color || wine.wine_type || '').toLowerCase() === 'red' ? 'bg-red-900/50 text-red-300 border border-red-700/30' :
+                    (wine.color || wine.wine_type || '').toLowerCase() === 'white' ? 'bg-yellow-900/50 text-yellow-300 border border-yellow-700/30' :
+                    (wine.color || wine.wine_type || '').toLowerCase() === 'rose' ? 'bg-pink-900/50 text-pink-300 border border-pink-700/30' :
+                    (wine.color || wine.wine_type || '').toLowerCase() === 'sparkling' ? 'bg-amber-900/50 text-amber-300 border border-amber-700/30' :
+                    'bg-purple-900/50 text-purple-300 border border-purple-700/30'
                   }`}>
                     {wine.color || wine.wine_type || 'Wine'}
                   </span>
-                  <h3 className="font-semibold text-stone-900 mb-1 line-clamp-2">{wine.name}</h3>
-                  <p className="text-sm text-stone-500 mb-2">{wine.region}</p>
-                  <p className="font-bold text-gold-500">{formatPrice(wine.price_retail)}</p>
+                  <h3 className="font-semibold text-gold-100 mb-1 line-clamp-2 group-hover:text-gold-300 transition-colors">{wine.name}</h3>
+                  <p className="text-sm text-gold-400/60 mb-2">{wine.region}</p>
+                  <p className="font-bold text-gold-400">{formatPrice(wine.price_retail)}</p>
                 </div>
               </Link>
             ))}
           </div>
+        )}
+
+        {/* Wine count */}
+        {!loading && (
+          <p className="text-center text-gold-500/40 text-sm mt-12">
+            Showing {filteredWines.length} of {wines.length} wines
+          </p>
         )}
       </main>
     </div>
