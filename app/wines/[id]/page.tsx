@@ -72,7 +72,7 @@ export async function generateMetadata({
   const displayName = wine.name // Use the wine name as-is (it already contains vintage if applicable)
 
   // Build keyword-rich title (30-60 characters optimal)
-  const title = `${displayName} | Buy Fine Wine | Aionysus`
+  const title = `Buy ${displayName} Online | Aionysus Wine UK`
 
   // Build comprehensive meta description (150-160 characters)
   const priceText = wine.price_retail
@@ -99,7 +99,7 @@ export async function generateMetadata({
       'investment wine'
     ].filter(Boolean).join(', '),
     openGraph: {
-      title: `${displayName} - Fine Wine from ${wine.region}`,
+      title: `Buy ${displayName} Online | ${wine.region} Wine`,
       description,
       type: 'website',
       url: `https://aionysus.wine/wines/${canonicalSlug}`,
@@ -108,7 +108,7 @@ export async function generateMetadata({
           url: wine.image_url,
           width: 400,
           height: 600,
-          alt: `${displayName} - ${wine.wine_type} wine from ${wine.region}, ${wine.country}`
+          alt: `Buy ${displayName} online - ${wine.wine_type} wine from ${wine.region}, ${wine.country}`
         }
       ] : undefined,
       siteName: 'Aionysus - AI Wine Sommelier'

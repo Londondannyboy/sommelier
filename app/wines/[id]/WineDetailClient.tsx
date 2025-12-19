@@ -142,7 +142,7 @@ export default function WineDetailClient({ wine }: WineDetailClientProps) {
               <figure className="relative w-64 h-96 md:w-80 md:h-[480px]">
                 <Image
                   src={wine.image_url || PLACEHOLDER_IMAGE}
-                  alt={`${wine.name} - ${wine.wine_type} wine from ${wine.region}, ${wine.country} by ${wine.winery}`}
+                  alt={`Buy ${wine.name} online - ${wine.wine_type} wine from ${wine.region}, ${wine.country}`}
                   fill
                   className="object-contain rounded-lg"
                   itemProp="image"
@@ -363,6 +363,11 @@ export default function WineDetailClient({ wine }: WineDetailClientProps) {
               <p>
                 At Aionysus, we provide expert guidance through our AI sommelier to help you make informed decisions about building your wine collection.
                 Whether you're purchasing {wine.name} for immediate enjoyment or cellaring, our team ensures every bottle meets the highest standards of quality and authenticity.
+              </p>
+              <p className="mt-4">
+                <Link href="/" className="text-gold-400 hover:text-gold-300 underline">
+                  Buy wine online with our AI sommelier
+                </Link> for personalized recommendations across our collection of 3,800+ fine wines.
               </p>
             </div>
           </section>

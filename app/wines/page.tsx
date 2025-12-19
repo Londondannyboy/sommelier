@@ -137,11 +137,11 @@ export default function WinesPage() {
       <main className="relative z-10 max-w-6xl mx-auto px-4 py-8 pt-28">
         {/* Header */}
         <div className="text-center mb-12">
-          <span className="text-gold-500/60 text-sm tracking-[0.3em] uppercase">✦ The Collection ✦</span>
+          <span className="text-gold-500/60 text-sm tracking-[0.3em] uppercase">✦ Buy Wine Online UK ✦</span>
           <h1 className="text-4xl md:text-5xl font-serif font-bold mt-2 bg-gradient-to-r from-gold-300 via-gold-400 to-gold-300 bg-clip-text text-transparent">
-            Wine Collection
+            Buy Wine Online
           </h1>
-          <p className="text-gold-200/60 mt-3">Curated wines recommended by your divine sommelier</p>
+          <p className="text-gold-200/60 mt-3">3,800+ fine wines curated by your AI sommelier. Buy wine online with expert guidance.</p>
         </div>
 
         {/* Search and Filter Controls */}
@@ -313,7 +313,7 @@ export default function WinesPage() {
                 <div className="aspect-[3/4] relative bg-stone-900">
                   <Image
                     src={wine.image_url || PLACEHOLDER_IMAGE}
-                    alt={wine.name}
+                    alt={`Buy ${wine.name} online - ${wine.wine_type || 'fine'} wine from ${wine.region}`}
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
@@ -350,6 +350,13 @@ export default function WinesPage() {
             Showing {filteredWines.length} of {wines.length} wines
           </p>
         )}
+
+        {/* Internal link back to home */}
+        <div className="text-center mt-8">
+          <p className="text-gold-400/60 text-sm">
+            Need help choosing? <Link href="/" className="text-gold-400 hover:text-gold-300 underline">Buy wine online with our AI sommelier</Link> for personalized recommendations.
+          </p>
+        </div>
       </main>
     </div>
   )

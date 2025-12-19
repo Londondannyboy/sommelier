@@ -1,6 +1,17 @@
 import { LazyVoiceWidget } from '@/components/LazyVoiceWidget'
 import { ScrollToTopButton } from '@/components/ScrollToTopButton'
 import Link from 'next/link'
+import Image from 'next/image'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: "Aionysus | Buy Wine Online UK - AI Sommelier & Wine Expert",
+  description: "Buy wine online from Aionysus, your AI sommelier. Shop 3,800+ fine wines with instant recommendations, food pairings & expert guidance. Buy wine online UK with free delivery.",
+  keywords: ["buy wine online", "buy wine online UK", "wine online UK", "AI sommelier", "AI wine taster", "wine shop", "fine wine", "wine delivery UK"],
+  alternates: {
+    canonical: "https://aionysus.wine",
+  },
+}
 
 export default function HomePage() {
   return (
@@ -29,17 +40,34 @@ export default function HomePage() {
       <main className="relative z-10">
         {/* Hero - Voice Widget First (above the fold) */}
         <section className="max-w-5xl mx-auto px-4 pt-28 pb-8">
-          <h1 className="sr-only">Aionysus - AI Wine Sommelier & Divine Wine Guide</h1>
+          {/* Visible H1 with primary keyword */}
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-center mb-4 bg-gradient-to-r from-gold-300 via-gold-400 to-gold-300 bg-clip-text text-transparent">
+            Buy Wine Online
+          </h1>
+          <p className="text-xl md:text-2xl text-gold-200/70 text-center mb-2">
+            with Your AI Sommelier
+          </p>
 
           {/* Quick intro */}
           <div className="text-center mb-6">
             <p className="text-gold-400/80 text-lg md:text-xl font-light">
-              Meet your new favourite sommelier. She's divine. Literally.
+              Meet your divine wine guide. Tell her what you want, she'll find the perfect bottle.
             </p>
           </div>
 
           {/* Voice Widget - THE STAR */}
           <LazyVoiceWidget />
+
+          {/* SEO Image with keyword alt text */}
+          <div className="flex justify-center mt-8">
+            <Image
+              src="/aionysus-classic-icon.png"
+              alt="Buy wine online with Aionysus AI sommelier - your personal wine expert"
+              width={120}
+              height={120}
+              className="opacity-60"
+            />
+          </div>
         </section>
 
         {/* How Aionysus Works - Fun, punchy */}
@@ -49,10 +77,10 @@ export default function HomePage() {
               <span className="text-gold-500/60 text-sm tracking-[0.3em] uppercase">Dead Simple</span>
             </div>
             <h2 className="text-4xl md:text-5xl font-serif font-bold text-center mb-4 bg-gradient-to-r from-gold-300 via-gold-400 to-gold-300 bg-clip-text text-transparent">
-              How Aionysus Works
+              How to Buy Wine Online
             </h2>
             <p className="text-lg text-gold-200/70 text-center max-w-2xl mx-auto mb-12">
-              No wine degree required. No endless scrolling. Just tell her what you want.
+              No wine degree required. No endless scrolling. Just tell her what you want and buy wine online in seconds.
             </p>
 
             <div className="grid md:grid-cols-3 gap-8">
@@ -78,9 +106,9 @@ export default function HomePage() {
                 <div className="w-20 h-20 bg-gradient-to-br from-gold-500 to-gold-700 text-black rounded-full flex items-center justify-center mx-auto mb-6 text-3xl font-bold shadow-[0_0_30px_rgba(212,165,10,0.4)] group-hover:shadow-[0_0_50px_rgba(212,165,10,0.6)] transition-all group-hover:scale-110">
                   3
                 </div>
-                <h3 className="font-bold text-gold-300 text-xl mb-3">Get Brilliant Wine</h3>
+                <h3 className="font-bold text-gold-300 text-xl mb-3">Buy Wine Online Instantly</h3>
                 <p className="text-gold-100/60 leading-relaxed">
-                  One perfect pick. Not 200 options. Tasting notes, food pairings, the works. Add to cart if you love it.
+                  One perfect pick. Not 200 options. Tasting notes, food pairings, the works. Buy wine online and it's on its way.
                 </p>
               </div>
             </div>
@@ -94,10 +122,10 @@ export default function HomePage() {
               <span className="text-gold-500/60 text-sm tracking-[0.3em] uppercase">Why Bother?</span>
             </div>
             <h2 className="text-4xl md:text-5xl font-serif font-bold text-center mb-4 bg-gradient-to-r from-gold-300 via-gold-400 to-gold-300 bg-clip-text text-transparent">
-              Why Aionysus?
+              Why Buy Wine Online with Us?
             </h2>
             <p className="text-lg text-gold-200/70 text-center max-w-2xl mx-auto mb-12">
-              Because life's too short for mediocre wine recommendations from algorithms that don't understand vibes.
+              Because life's too short for mediocre wine. Our AI sommelier actually understands what you want.
             </p>
 
             <div className="grid md:grid-cols-2 gap-8">
@@ -181,10 +209,10 @@ export default function HomePage() {
               </details>
               <details className="bg-stone-900/50 rounded-xl border border-gold-700/30 group">
                 <summary className="px-6 py-4 cursor-pointer font-semibold text-gold-200 flex justify-between items-center hover:text-gold-400">
-                  Can I actually buy wine here?
+                  Can I buy wine online here?
                   <span className="text-gold-500/60 group-open:rotate-180 transition-transform">▼</span>
                 </summary>
-                <p className="px-6 pb-4 text-gold-100/60">Coming very soon! Right now you can discover, learn, and build a wishlist. Full checkout is launching shortly.</p>
+                <p className="px-6 pb-4 text-gold-100/60">Yes! You can buy wine online from our collection of 3,800+ bottles. Chat with Aionysus, find your perfect wine, and add to cart. UK delivery available.</p>
               </details>
               <details className="bg-stone-900/50 rounded-xl border border-gold-700/30 group">
                 <summary className="px-6 py-4 cursor-pointer font-semibold text-gold-200 flex justify-between items-center hover:text-gold-400">
@@ -208,10 +236,10 @@ export default function HomePage() {
         <section className="py-20 bg-gradient-to-b from-stone-950 to-black border-t border-gold-800/20">
           <div className="max-w-2xl mx-auto px-4 text-center">
             <h2 className="text-3xl md:text-4xl font-serif font-bold mb-6 bg-gradient-to-r from-gold-300 via-gold-400 to-gold-300 bg-clip-text text-transparent">
-              Ready to find your next favourite bottle?
+              Ready to Buy Wine Online?
             </h2>
             <p className="text-gold-200/70 mb-8">
-              Scroll back up and tap that golden face. She's waiting.
+              Scroll back up and tap that golden face. Tell her what you want and buy wine online in seconds.
             </p>
             <ScrollToTopButton />
           </div>
@@ -231,7 +259,10 @@ export default function HomePage() {
 
             <div className="flex flex-wrap justify-center gap-6 text-sm">
               <Link href="/wines" className="text-gold-400/70 hover:text-gold-300 transition-colors">
-                Browse Wines
+                Buy Wine Online
+              </Link>
+              <Link href="/wines" className="text-gold-400/70 hover:text-gold-300 transition-colors">
+                Wine Shop UK
               </Link>
               <Link href="/privacy" className="text-gold-400/70 hover:text-gold-300 transition-colors">
                 Privacy Policy

@@ -11,7 +11,7 @@ export function Footer() {
           <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-gold-500/50 shadow-[0_0_10px_rgba(212,165,10,0.3)] group-hover:shadow-[0_0_15px_rgba(212,165,10,0.5)] transition-shadow">
             <img
               src="/aionysus.jpg"
-              alt="Aionysus"
+              alt="Aionysus - Buy wine online with AI sommelier"
               className="w-full h-full object-cover object-[center_15%]"
             />
           </div>
@@ -20,12 +20,15 @@ export function Footer() {
         <p className="text-gold-500/60 italic text-sm mt-2 mb-6">Where there is no wine, there is no love</p>
 
         {/* Navigation Links */}
-        <nav className="flex justify-center gap-6 mb-6">
-          <Link href="/wines" className="text-stone-400 hover:text-gold-400 transition-colors text-sm">
-            Wines
+        <nav className="flex flex-wrap justify-center gap-6 mb-6">
+          <Link href="/" className="text-stone-400 hover:text-gold-400 transition-colors text-sm">
+            Buy Wine Online
           </Link>
-          <Link href="/cart" className="text-stone-400 hover:text-gold-400 transition-colors text-sm">
-            Cart
+          <Link href="/wines" className="text-stone-400 hover:text-gold-400 transition-colors text-sm">
+            Wine Shop UK
+          </Link>
+          <Link href="/wines" className="text-stone-400 hover:text-gold-400 transition-colors text-sm">
+            Fine Wine Collection
           </Link>
           <a href="mailto:hello@aionysus.wine" className="text-stone-400 hover:text-gold-400 transition-colors text-sm">
             Contact
