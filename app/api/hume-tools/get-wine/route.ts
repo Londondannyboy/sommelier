@@ -43,6 +43,7 @@ export async function POST(request: NextRequest) {
       vintage: wine.vintage,
       wine_type: wine.wine_type,
       style: wine.style,
+      color: wine.color,
       appellation: wine.appellation,
       classification: wine.classification,
       price_retail: wine.price_retail ? `£${wine.price_retail}` : null,

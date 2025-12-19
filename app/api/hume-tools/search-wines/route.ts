@@ -7,14 +7,14 @@ const sql = neon(process.env.DATABASE_URL!)
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { country, region, wine_type, max_price, min_price, style, grape_variety } = body
+    const { country, region, wine_type, max_price, min_price, style, grape_variety, color } = body
 
     // Fetch all active wines and filter in application
     // This is simpler and works well for small wine databases (~20-100 wines)
     const allWines = await sql`
       SELECT
         id, name, winery, region, country, grape_variety, vintage,
-        wine_type, style, price_retail, price_trade, bottle_size,
+        wine_type, style, color, price_retail, price_trade, bottle_size,
         tasting_notes, critic_scores, drinking_window, image_url,
         stock_quantity, case_size, classification
       FROM wines
@@ -45,6 +45,9 @@ export async function POST(request: NextRequest) {
       if (grape_variety && !wine.grape_variety?.toLowerCase().includes(grape_variety.toLowerCase())) {
         return false
       }
+      if (color && wine.color?.toLowerCase() !== color.toLowerCase()) {
+        return false
+      }
       return true
     })
 
@@ -62,6 +65,7 @@ export async function POST(request: NextRequest) {
       vintage: wine.vintage,
       wine_type: wine.wine_type,
       style: wine.style,
+      color: wine.color,
       price_retail: wine.price_retail ? `£${wine.price_retail}` : null,
       price_trade: wine.price_trade ? `£${wine.price_trade}` : null,
       bottle_size: wine.bottle_size,

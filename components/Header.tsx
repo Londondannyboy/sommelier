@@ -25,7 +25,6 @@ export function Header() {
           {/* Nav */}
           <nav className="hidden md:flex items-center gap-8">
             <a href="#how-sommelier-ai-works" className="text-stone-600 hover:text-stone-900 transition-colors text-sm">How it works</a>
-            <a href="#sommelier-ai-for-business" className="text-stone-600 hover:text-stone-900 transition-colors text-sm">For Business</a>
           </nav>
 
           {/* Auth Section */}
