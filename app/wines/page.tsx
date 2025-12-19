@@ -7,6 +7,7 @@ import Image from 'next/image'
 interface Wine {
   id: number
   name: string
+  slug: string | null
   winery: string
   region: string
   wine_type: string
@@ -105,7 +106,7 @@ export default function WinesPage() {
             {filteredWines.map((wine) => (
               <Link
                 key={wine.id}
-                href={`/wines/${wine.id}`}
+                href={`/wines/${wine.slug || wine.id}`}
                 className="bg-gradient-to-b from-stone-900/80 to-stone-950/90 rounded-xl border border-gold-700/20 overflow-hidden hover:border-gold-500/40 hover:shadow-[0_0_30px_rgba(212,165,10,0.15)] transition-all group"
               >
                 <div className="aspect-[3/4] relative bg-stone-900">

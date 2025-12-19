@@ -6,7 +6,7 @@ const sql = neon(process.env.DATABASE_URL!)
 export async function GET() {
   try {
     const wines = await sql`
-      SELECT id, name, winery, region, country, wine_type, color, price_retail, image_url, vintage, grape_variety
+      SELECT id, name, slug, winery, region, country, wine_type, color, price_retail, image_url, vintage, grape_variety
       FROM wines
       WHERE is_active = true
       ORDER BY name ASC

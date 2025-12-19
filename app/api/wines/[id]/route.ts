@@ -10,14 +10,31 @@ export async function GET(
   try {
     const { id } = await params
 
-    const results = await sql`
-      SELECT id, name, winery, region, country, grape_variety,
-             vintage, wine_type, style, color, price_retail,
-             tasting_notes, food_pairings, alcohol_percentage, image_url
-      FROM wines
-      WHERE id = ${id} AND is_active = true
-      LIMIT 1
-    `
+    // Check if it's a numeric ID or a slug
+    const isNumericId = /^\d+$/.test(id)
+
+    let results
+    if (isNumericId) {
+      // Lookup by ID (legacy support)
+      results = await sql`
+        SELECT id, name, slug, winery, region, country, grape_variety,
+               vintage, wine_type, style, color, price_retail,
+               tasting_notes, food_pairings, alcohol_percentage, image_url
+        FROM wines
+        WHERE id = ${id} AND is_active = true
+        LIMIT 1
+      `
+    } else {
+      // Lookup by SEO-friendly slug
+      results = await sql`
+        SELECT id, name, slug, winery, region, country, grape_variety,
+               vintage, wine_type, style, color, price_retail,
+               tasting_notes, food_pairings, alcohol_percentage, image_url
+        FROM wines
+        WHERE slug = ${id} AND is_active = true
+        LIMIT 1
+      `
+    }
 
     if (results.length === 0) {
       return NextResponse.json(
