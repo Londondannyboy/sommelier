@@ -9,6 +9,7 @@ import Link from 'next/link'
 interface Wine {
   id: number
   name: string
+  slug?: string
   winery: string
   region: string
   country: string
@@ -32,7 +33,7 @@ function WineCard({ wine, onAddToCart }: { wine: Wine; onAddToCart: (wine: Wine)
 
   return (
     <div className="flex gap-3 bg-white rounded-xl border border-stone-200 p-3 mt-2 max-w-sm">
-      <Link href={`/wines/${wine.id}`} className="relative w-16 h-24 flex-shrink-0">
+      <Link href={`/wines/${wine.slug || wine.id}`} className="relative w-16 h-24 flex-shrink-0">
         <img
           src={wine.image_url || 'https://res.cloudinary.com/dc7btom12/image/upload/v1766073925/wines/wine-22-1952-ch-haut-brion.jpg'}
           alt={wine.name}
@@ -40,7 +41,7 @@ function WineCard({ wine, onAddToCart }: { wine: Wine; onAddToCart: (wine: Wine)
         />
       </Link>
       <div className="flex-1 min-w-0">
-        <Link href={`/wines/${wine.id}`} className="font-semibold text-stone-900 text-sm hover:text-gold-600 line-clamp-2">
+        <Link href={`/wines/${wine.slug || wine.id}`} className="font-semibold text-stone-900 text-sm hover:text-gold-600 line-clamp-2">
           {wine.name}
         </Link>
         <p className="text-xs text-stone-500">{wine.winery} · {wine.country}</p>
@@ -499,7 +500,7 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
           aria-label={isConnected ? "Stop conversation with Aionysus" : "Tap to speak with Aionysus"}
         >
           <img
-            src="/goddess.jpg"
+            src="/aionysus-classic-icon.png"
             alt="Aionysus - Goddess of Wine"
             className={`w-56 h-56 md:w-72 md:h-72 lg:w-80 lg:h-80 rounded-full object-cover object-[center_20%] border-4 cursor-pointer ${
               isConnected

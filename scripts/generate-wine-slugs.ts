@@ -103,7 +103,33 @@ async function main() {
     let skipped = 0
     const slugMap = new Map<string, number>() // Track used slugs
 
+    // Pre-populate slugMap with existing slugs from database to avoid duplicates
+    const existingSlugs = await sql`
+      SELECT slug FROM wines WHERE slug IS NOT NULL
+    `
+    for (const row of existingSlugs) {
+      if (row.slug) {
+        // Extract base slug and count suffix if present
+        const match = row.slug.match(/^(.+)-(\d+)$/)
+        if (match) {
+          const baseSlug = match[1]
+          const count = parseInt(match[2], 10)
+          const currentMax = slugMap.get(baseSlug) || 0
+          slugMap.set(baseSlug, Math.max(currentMax, count))
+        } else {
+          slugMap.set(row.slug, slugMap.get(row.slug) || 1)
+        }
+      }
+    }
+    console.log(`   Pre-loaded ${existingSlugs.length} existing slugs\n`)
+
     for (const wine of wines) {
+      // Skip if wine already has a valid slug
+      if (wine.slug && wine.slug.length > 0) {
+        skipped++
+        continue
+      }
+
       let slug = generateSlug(wine.name, wine.vintage)
 
       // Handle duplicates by adding a suffix
@@ -115,18 +141,14 @@ async function main() {
         slugMap.set(slug, 1)
       }
 
-      // Update if slug is different or empty
-      if (wine.slug !== slug) {
-        await sql`
-          UPDATE wines
-          SET slug = ${slug}
-          WHERE id = ${wine.id}
-        `
-        console.log(`   ✅ ${wine.id}: ${wine.name} → ${slug}`)
-        updated++
-      } else {
-        skipped++
-      }
+      // Update the wine with new slug
+      await sql`
+        UPDATE wines
+        SET slug = ${slug}
+        WHERE id = ${wine.id}
+      `
+      console.log(`   ✅ ${wine.id}: ${wine.name} → ${slug}`)
+      updated++
     }
 
     console.log(`\n📊 Summary:`)
