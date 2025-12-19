@@ -13,11 +13,66 @@ export const metadata: Metadata = {
   },
 }
 
+// FAQ Schema for Google Rich Results
+const faqSchema = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Is Aionysus free to use?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes, Aionysus is free during beta. We're building something special and want you to try it. Tap her face, have a chat, find some wine."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What wines can I buy online at Aionysus?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "3,800+ wines and counting. Red, white, rosé, sparkling, dessert. Bordeaux First Growths to everyday drinkers. Burgundy Grand Crus to Champagne legends."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I buy wine online from Aionysus?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes! You can buy wine online from our collection of 3,800+ bottles. Chat with Aionysus, find your perfect wine, and add to cart. UK delivery available."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How does the AI sommelier know so much about wine?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "We fed her thousands of wines with tasting notes, critic scores, vintage info, food pairings, and pricing. She's like a master sommelier who never sleeps and never judges your budget."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is enterprise or API access available?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Absolutely. Contact us at hello@aionysus.wine to discuss enterprise solutions and API access."
+      }
+    }
+  ]
+}
+
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-stone-950 to-black relative overflow-hidden">
-      {/* Champagne bubbles rising UP like fizz in a glass */}
-      <div className="champagne-bubbles" aria-hidden="true">
+    <>
+      {/* FAQ Schema for Google Rich Results */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
+
+      <div className="min-h-screen bg-gradient-to-b from-black via-stone-950 to-black relative overflow-hidden">
+        {/* Champagne bubbles rising UP like fizz in a glass */}
+        <div className="champagne-bubbles" aria-hidden="true">
         {[...Array(25)].map((_, i) => (
           <div key={i} className="bubble"></div>
         ))}
@@ -39,9 +94,9 @@ export default function HomePage() {
       {/* Main Content */}
       <main className="relative z-10">
         {/* Hero - Voice Widget First (above the fold) */}
-        <section className="max-w-5xl mx-auto px-4 pt-28 pb-8">
+        <section className="max-w-5xl mx-auto px-4 pt-20 pb-16">
           {/* Visible H1 with primary keyword */}
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-center mb-4 bg-gradient-to-r from-gold-300 via-gold-400 to-gold-300 bg-clip-text text-transparent">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-center mb-3 bg-gradient-to-r from-gold-300 via-gold-400 to-gold-300 bg-clip-text text-transparent">
             Buy Wine Online
           </h1>
           <p className="text-xl md:text-2xl text-gold-200/70 text-center mb-2">
@@ -49,23 +104,25 @@ export default function HomePage() {
           </p>
 
           {/* Quick intro */}
-          <div className="text-center mb-6">
+          <div className="text-center mb-8">
             <p className="text-gold-400/80 text-lg md:text-xl font-light">
               Meet your divine wine guide. Tell her what you want, she'll find the perfect bottle.
             </p>
           </div>
 
-          {/* Voice Widget - THE STAR */}
-          <LazyVoiceWidget />
+          {/* Voice Widget - THE STAR - with clear breathing room */}
+          <div className="my-8">
+            <LazyVoiceWidget />
+          </div>
 
           {/* SEO Image with keyword alt text */}
-          <div className="flex justify-center mt-8">
+          <div className="flex justify-center mt-10">
             <Image
               src="/aionysus-classic-icon.png"
               alt="Buy wine online with Aionysus AI sommelier - your personal wine expert"
-              width={120}
-              height={120}
-              className="opacity-60"
+              width={100}
+              height={100}
+              className="opacity-50"
             />
           </div>
         </section>
@@ -286,6 +343,7 @@ export default function HomePage() {
           </div>
         </div>
       </footer>
-    </div>
+      </div>
+    </>
   )
 }
