@@ -124,7 +124,7 @@ const WINE_TOOLS = [
 ]
 
 function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?: string }) {
-  const { connect, disconnect, status, messages, sendToolMessage } = useVoice()
+  const { connect, disconnect, status, messages, sendToolMessage, isPlaying } = useVoice()
   const [manualConnected, setManualConnected] = useState(false)
   const [waveHeights, setWaveHeights] = useState<number[]>([])
   const [wines, setWines] = useState<Wine[]>([])
@@ -510,19 +510,46 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
             }}
           >
             {/* Icon scaled up to fill the circle (square corners get clipped) */}
-            <div className="absolute inset-[-15%] w-[130%] h-[130%] flex items-center justify-center">
+            <div className={`absolute inset-[-15%] w-[130%] h-[130%] flex items-center justify-center ${
+              isPlaying ? 'animate-[speaking-breathe_2s_ease-in-out_infinite]' : ''
+            }`}>
               <img
                 src="/aionysus-classic-icon.png"
                 alt="Aionysus - Goddess of Wine"
                 className={`w-full h-full object-cover cursor-pointer ${
                   isConnected
-                    ? 'scale-105'
+                    ? isPlaying
+                      ? 'scale-105 brightness-110'
+                      : 'scale-105'
                     : isConnecting
                     ? 'opacity-80 cursor-wait'
                     : 'group-hover:scale-[1.02]'
                 } transition-all duration-300`}
               />
             </div>
+
+            {/* Speaking glow effect */}
+            {isPlaying && (
+              <div className="absolute inset-0 rounded-full animate-[speaking-glow_1.5s_ease-in-out_infinite] pointer-events-none" />
+            )}
+
+            {/* Expanding rings when speaking */}
+            {isPlaying && (
+              <>
+                <div
+                  className="absolute inset-0 rounded-full border-2 border-gold-400/60 pointer-events-none"
+                  style={{ animation: 'speaking-ring 2s ease-out infinite' }}
+                />
+                <div
+                  className="absolute inset-0 rounded-full border-2 border-gold-400/40 pointer-events-none"
+                  style={{ animation: 'speaking-ring 2s ease-out infinite 0.5s' }}
+                />
+                <div
+                  className="absolute inset-0 rounded-full border border-gold-400/20 pointer-events-none"
+                  style={{ animation: 'speaking-ring 2s ease-out infinite 1s' }}
+                />
+              </>
+            )}
           </div>
 
           {/* Subtle connecting spinner overlay */}
@@ -574,9 +601,16 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
           <div
             key={i}
             className={`w-[3px] rounded-full transition-all duration-100 ${
-              isConnected ? 'bg-gold-500' : 'bg-gold-300'
+              isPlaying
+                ? 'bg-gold-400 shadow-[0_0_8px_rgba(212,165,10,0.6)]'
+                : isConnected
+                ? 'bg-gold-500'
+                : 'bg-gold-300'
             }`}
-            style={{ height: `${height}%` }}
+            style={{
+              height: `${isPlaying ? Math.min(height * 1.3, 100) : height}%`,
+              transition: isPlaying ? 'all 0.05s ease-out' : 'all 0.1s ease-out'
+            }}
           />
         ))}
       </div>
@@ -587,9 +621,13 @@ function VoiceInterface({ accessToken, userId }: { accessToken: string; userId?:
       </p>
 
       {/* Status Text - LARGER */}
-      <p className="text-gold-500 text-2xl md:text-3xl font-bold mb-6 text-center tracking-wide">
+      <p className={`text-2xl md:text-3xl font-bold mb-6 text-center tracking-wide transition-all ${
+        isPlaying ? 'text-gold-300' : 'text-gold-500'
+      }`}>
         {isConnecting
           ? "Connecting to Aionysus..."
+          : isPlaying
+          ? "Aionysus is speaking..."
           : isConnected
           ? "Aionysus is listening..."
           : isError
