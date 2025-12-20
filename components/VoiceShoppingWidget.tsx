@@ -91,9 +91,8 @@ function VoiceShoppingInterface({ accessToken, userId }: { accessToken: string; 
   const [manualConnected, setManualConnected] = useState(false)
   const [waveHeights, setWaveHeights] = useState<number[]>([])
   const [wines, setWines] = useState<Wine[]>([])
-  // Transcript-synced wine display: pending (hidden) → displayed (visible)
-  const [pendingWines, setPendingWines] = useState<Wine[]>([])      // Hidden, from tool response
-  const [displayedWines, setDisplayedWines] = useState<Wine[]>([])  // Visible in rack, matched from transcript
+  // Wines to display in the rack
+  const [displayedWines, setDisplayedWines] = useState<Wine[]>([])
   const [activeFilters, setActiveFilters] = useState<ActiveFilters>({})
   const [localCart, setLocalCart] = useState<Array<{ id: number; name: string; winery: string; price: number; quantity: number; image_url: string }>>([])
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
@@ -112,21 +111,7 @@ function VoiceShoppingInterface({ accessToken, userId }: { accessToken: string; 
     }
   }, [status.value])
 
-  // Log when wines change - and show immediately (simpler approach)
-  useEffect(() => {
-    console.log('[Wine Rack] pendingWines:', pendingWines.length, pendingWines.map(w => w.name))
-
-    // Show wines immediately when they come from tools (no transcript sync for now)
-    if (pendingWines.length > 0) {
-      console.log('[Wine Rack] Showing wines immediately')
-      setDisplayedWines(prev => {
-        const newWines = pendingWines.filter(pw => !prev.find(dw => dw.id === pw.id))
-        return [...newWines, ...prev]
-      })
-      setPendingWines([])
-    }
-  }, [pendingWines])
-
+  // Log when wines change
   useEffect(() => {
     console.log('[Wine Rack] displayedWines:', displayedWines.length, displayedWines.map(w => w.name))
   }, [displayedWines])
@@ -177,37 +162,6 @@ function VoiceShoppingInterface({ accessToken, userId }: { accessToken: string; 
     fetchData()
   }, [])
 
-  // Fuzzy matching: Check if a wine is mentioned in transcript
-  function isWineMentioned(wine: Wine, transcript: string): boolean {
-    const text = transcript.toLowerCase()
-
-    // Check full name
-    if (text.includes(wine.name.toLowerCase())) return true
-
-    // Check partial matches (significant words from wine name)
-    const words = wine.name.toLowerCase().split(/\s+/)
-    const significantWords = words.filter(w =>
-      w.length > 3 && !['the', 'and', 'wine', 'from', 'with'].includes(w)
-    )
-
-    // If 2+ significant words match, consider it mentioned
-    const matchCount = significantWords.filter(word => text.includes(word)).length
-    if (matchCount >= 2) return true
-
-    // Check winery name
-    if (wine.winery && text.includes(wine.winery.toLowerCase())) return true
-
-    // Check vintage + region combo (e.g., "2018 Bordeaux")
-    if (wine.vintage && wine.region) {
-      const regionFirst = wine.region.toLowerCase().split(',')[0].trim()
-      if (text.includes(wine.vintage.toString()) && text.includes(regionFirst)) {
-        return true
-      }
-    }
-
-    return false
-  }
-
   // Handle Hume tool calls
   useEffect(() => {
     const lastMessage = messages[messages.length - 1]
@@ -243,16 +197,15 @@ function VoiceShoppingInterface({ accessToken, userId }: { accessToken: string; 
             })
             result = await response.json()
             console.log('[Wine Rack] search_wines result:', result)
-            // Add wines to pending (hidden) - will be revealed when mentioned in transcript
+            // Add wines directly to display
             if (result.wines && Array.isArray(result.wines)) {
-              console.log('[Wine Rack] Adding to pendingWines:', result.wines.length)
-              const newWines = result.wines.filter((w: Wine) =>
-                !pendingWines.find(pw => pw.id === w.id) &&
-                !displayedWines.find(dw => dw.id === w.id)
-              )
-              if (newWines.length > 0) {
-                setPendingWines(prev => [...newWines, ...prev])
-              }
+              console.log('[Wine Rack] Adding wines to display:', result.wines.length)
+              setDisplayedWines(prev => {
+                const newWines = result.wines.filter((w: Wine) =>
+                  !prev.find(dw => dw.id === w.id)
+                )
+                return [...newWines, ...prev]
+              })
             }
             break
 
@@ -264,12 +217,13 @@ function VoiceShoppingInterface({ accessToken, userId }: { accessToken: string; 
             })
             result = await response.json()
             console.log('[Wine Rack] get_wine result:', result)
-            // Add to pending - will be revealed when mentioned in transcript
-            if (result.wine &&
-                !pendingWines.find(w => w.id === result.wine.id) &&
-                !displayedWines.find(w => w.id === result.wine.id)) {
-              console.log('[Wine Rack] Adding to pendingWines:', result.wine.name)
-              setPendingWines(prev => [result.wine, ...prev])
+            // Add wine directly to display
+            if (result.wine) {
+              console.log('[Wine Rack] Adding wine to display:', result.wine.name)
+              setDisplayedWines(prev => {
+                if (prev.find(w => w.id === result.wine.id)) return prev
+                return [result.wine, ...prev]
+              })
             }
             break
 
@@ -290,17 +244,16 @@ function VoiceShoppingInterface({ accessToken, userId }: { accessToken: string; 
             })
             result = await response.json()
             console.log('[Wine Rack] recommend_wines result:', result)
-            // API returns recommendations array - add to pending
+            // API returns recommendations array - add directly to display
             const recWines = result.recommendations || result.wines || []
             if (Array.isArray(recWines) && recWines.length > 0) {
-              console.log('[Wine Rack] Adding recommendations to pendingWines:', recWines.length)
-              const newWines = recWines.filter((w: Wine) =>
-                !pendingWines.find(pw => pw.id === w.id) &&
-                !displayedWines.find(dw => dw.id === w.id)
-              )
-              if (newWines.length > 0) {
-                setPendingWines(prev => [...newWines, ...prev])
-              }
+              console.log('[Wine Rack] Adding recommendations to display:', recWines.length)
+              setDisplayedWines(prev => {
+                const newWines = recWines.filter((w: Wine) =>
+                  !prev.find(dw => dw.id === w.id)
+                )
+                return [...newWines, ...prev]
+              })
             }
             break
 
@@ -379,7 +332,7 @@ function VoiceShoppingInterface({ accessToken, userId }: { accessToken: string; 
     if (lastMessage.toolCallId && lastMessage.name) {
       handleToolCall(lastMessage)
     }
-  }, [messages, sendToolMessage, pendingWines, displayedWines, shopifyCartId])
+  }, [messages, sendToolMessage, displayedWines, shopifyCartId])
 
   useEffect(() => {
     if (status.value === 'connected') {
